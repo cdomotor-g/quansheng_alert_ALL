@@ -1,0 +1,11 @@
+{
+  "name": "quansheng-alert-all-tests",
+  "private": true,
+  "description": "Tests for the setup site in docs/: the protocol layer, and the installer driven end to end against simulated radios.",
+  "scripts": {
+    "test": "node test/test_k5protocol.mjs && node test/test_installer.mjs && node test/test_site.mjs"
+  },
+  "devDependencies": {
+    "playwright": "1.49.1"
+  }
+}

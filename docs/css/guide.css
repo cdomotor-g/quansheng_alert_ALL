@@ -1,0 +1,125 @@
+/* The setup guide. Builds on flasher.css (colours, cards, buttons). */
+
+.wrap.wide { max-width: 900px; }
+
+.top.hero { padding: 38px 0 40px; }
+.top.hero h1 { font-size: 2rem; line-height: 1.2; max-width: 28ch; }
+.top.hero .lede { font-size: 1.08rem; max-width: 60ch; }
+.hero-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+a.btn {
+	display: inline-block; text-decoration: none; font-weight: 700;
+	padding: 11px 18px; border-radius: 9px; border: 1px solid transparent;
+}
+a.btn.light { background: #fff; color: #0a5f70; }
+a.btn.outline { color: #fff; border-color: rgba(255,255,255,.6); }
+a.btn.primary { background: var(--accent); color: #fff; }
+a.btn:hover { filter: brightness(1.08); }
+
+/* section navigation, sticky, scrolls sideways on a phone */
+nav.toc {
+	position: sticky; top: 0; z-index: 10;
+	background: color-mix(in srgb, var(--bg) 92%, transparent);
+	backdrop-filter: blur(6px);
+	border-bottom: 1px solid var(--line);
+}
+nav.toc ul {
+	list-style: none; margin: 0 auto; padding: 8px 20px; max-width: 900px;
+	display: flex; gap: 4px; overflow-x: auto; white-space: nowrap; scrollbar-width: thin;
+}
+nav.toc a {
+	display: block; padding: 5px 10px; border-radius: 999px;
+	color: var(--muted); text-decoration: none; font-size: 0.92rem; font-weight: 600;
+}
+nav.toc a:hover, nav.toc a.here { color: var(--accent); background: color-mix(in srgb, var(--accent) 10%, transparent); }
+
+section.card { scroll-margin-top: 56px; }
+.card h2 { font-size: 1.35rem; }
+.card h3 { font-size: 1.05rem; margin-top: 22px; }
+.card > h2 + p.sub { margin-top: -4px; color: var(--muted); }
+
+.quick { border-color: var(--accent); }
+.quick ol { counter-reset: q; list-style: none; padding: 0; margin: 12px 0 0; display: grid; gap: 10px;
+            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); }
+.quick li { counter-increment: q; background: color-mix(in srgb, var(--accent) 7%, var(--card));
+            border-radius: 10px; padding: 12px 14px 12px 46px; position: relative; }
+.quick li::before { content: counter(q); position: absolute; left: 12px; top: 12px;
+                    width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center;
+                    background: var(--accent); color: #fff; font-weight: 700; font-size: 0.85rem; }
+
+/* pictures */
+figure { margin: 14px 0; }
+figure img { display: block; max-width: 100%; height: auto; border-radius: 10px; }
+figcaption { color: var(--muted); font-size: 0.86rem; margin-top: 6px; }
+.photo { background: #fff; border: 1px solid var(--line); }
+.grid2 { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); align-items: start; }
+.grid3 { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); align-items: start; }
+
+/* the 128x64 LCD captures, scaled without blurring */
+img.lcd { image-rendering: pixelated; width: 100%; max-width: 384px; border-radius: 6px;
+          border: 6px solid #2b3a2b; box-sizing: content-box; }
+
+/* shopping list */
+.kit { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); margin-top: 12px; }
+.kit .item { border: 1px solid var(--line); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; }
+.kit .item img { width: 100%; height: 200px; object-fit: contain; background: #fff; border-radius: 0; }
+.kit .item .body { padding: 12px 14px; }
+.kit .item h3 { margin: 0 0 4px; font-size: 1rem; }
+.kit .item p { margin: 4px 0; font-size: 0.94rem; }
+.kit .item .need { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--accent); }
+.kit .item .need.opt { color: var(--muted); }
+
+/* tables */
+table.t { width: 100%; border-collapse: collapse; font-size: 0.94rem; margin: 12px 0; }
+table.t th, table.t td { text-align: left; padding: 7px 9px; border-bottom: 1px solid var(--line); vertical-align: top; }
+table.t thead th { color: var(--muted); font-weight: 600; }
+table.t tbody th { font-weight: 700; white-space: nowrap; }
+.scroll-x { overflow-x: auto; }
+kbd {
+	font: 600 0.85em ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+	padding: 1px 6px; border-radius: 5px; white-space: nowrap;
+	border: 1px solid var(--line); border-bottom-width: 2px; background: var(--card);
+}
+
+pre.cmd {
+	background: color-mix(in srgb, var(--ink) 7%, var(--card));
+	border: 1px solid var(--line); border-radius: 8px;
+	padding: 10px 12px; overflow-x: auto;
+	font: 13px/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+pre.cmd .c { color: var(--muted); }
+
+/* the two radios side by side, or as tabs on narrow screens */
+.tabs { display: flex; gap: 6px; margin: 12px 0 0; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.tabs button {
+	background: transparent; color: var(--muted); border: 1px solid transparent; border-bottom: none;
+	border-radius: 8px 8px 0 0; padding: 8px 14px; margin-bottom: -1px;
+}
+.tabs button[aria-selected="true"] { color: var(--ink); background: var(--card); border-color: var(--line); }
+.tabpanel { padding-top: 6px; }
+.tabpanel[hidden] { display: none; }
+
+.callout { border-radius: 8px; padding: 10px 14px; margin: 12px 0; border-left: 3px solid var(--accent);
+           background: color-mix(in srgb, var(--accent) 8%, var(--card)); }
+.callout.good { border-left-color: var(--ok);   background: var(--okbg); }
+.callout.warn { border-left-color: var(--warn); background: var(--warnbg); }
+.callout.bad  { border-left-color: var(--bad);  background: var(--badbg); }
+.callout p { margin: 6px 0; }
+
+details.faq { border-top: 1px solid var(--line); padding: 10px 0 2px; margin: 0; }
+details.faq > summary { font-weight: 600; }
+details.faq > *:not(summary) { margin-left: 2px; }
+
+.dl td code { word-break: break-all; font-size: 0.8em; }
+.credit { font-size: 0.86rem; color: var(--muted); }
+.credit li { margin: 4px 0; }
+
+@media (max-width: 560px) {
+	.top.hero h1 { font-size: 1.55rem; }
+	.kit .item img { height: 170px; }
+	table.t { font-size: 0.88rem; }
+}
+
+@media print {
+	nav.toc, .hero-actions, #portbar { display: none; }
+	.card { break-inside: avoid; }
+}

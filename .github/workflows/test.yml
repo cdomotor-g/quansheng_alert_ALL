@@ -1,0 +1,42 @@
+name: Test the site
+
+# The installer is the part of this repository that touches people's radios,
+# so every change to it runs the protocol vectors (checked against serialtool
+# and k5prog byte for byte) and the whole wizard against simulated radios.
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install Playwright and Chromium
+        run: |
+          npm install --no-audit --no-fund
+          npx playwright install --with-deps chromium
+
+      - name: Protocol vectors
+        run: node test/test_k5protocol.mjs
+
+      - name: Installer against simulated radios
+        run: node test/test_installer.mjs
+
+      - name: Guide page
+        run: node test/test_site.mjs
+
+      - name: Manifest matches the files
+        run: python3 tools/check_manifest.py

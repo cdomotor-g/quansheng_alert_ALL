@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 240" role="img" aria-labelledby="t">
+  <title id="t">A laptop running Chrome or Edge, connected to the radio by a USB cable</title>
+  <rect width="460" height="240" fill="#ffffff"/>
+  <g transform="translate(30,0)">
+  <rect x="60" y="30" width="220" height="140" rx="10" fill="#2b3138"/>
+  <rect x="72" y="42" width="196" height="116" rx="4" fill="#eef4f6"/>
+  <rect x="72" y="42" width="196" height="18" fill="#d8e0e6"/>
+  <circle cx="82" cy="51" r="3.5" fill="#f08272"/><circle cx="93" cy="51" r="3.5" fill="#e0a94a"/><circle cx="104" cy="51" r="3.5" fill="#4ecfa4"/>
+  <rect x="84" y="70" width="120" height="10" rx="3" fill="#0b7285"/>
+  <rect x="84" y="88" width="170" height="6" rx="3" fill="#9fb0bd"/>
+  <rect x="84" y="100" width="150" height="6" rx="3" fill="#9fb0bd"/>
+  <rect x="84" y="118" width="70" height="20" rx="5" fill="#0b7285"/>
+  <rect x="40" y="170" width="260" height="14" rx="5" fill="#3c444d"/>
+  <path d="M300 177 C 330 177, 330 120, 352 120" fill="none" stroke="#16212b" stroke-width="4"/>
+  <rect x="338" y="96" width="34" height="96" rx="7" fill="#2b3138"/>
+  <rect x="344" y="104" width="22" height="22" rx="2" fill="#c9d6c9"/>
+  <rect x="346" y="64" width="8" height="34" rx="3" fill="#1d2126"/>
+  <rect x="358" y="84" width="10" height="13" rx="3" fill="#ff7a1a"/>
+  </g>
+  <text x="230" y="222" text-anchor="middle" font-family="system-ui,-apple-system,Segoe UI,Roboto,sans-serif" font-size="14" font-weight="600" fill="#16212b">Chrome or Edge · Windows, macOS, Linux, ChromeOS</text>
+</svg>

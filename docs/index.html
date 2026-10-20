@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ALERT Radio Setup — Quansheng flood-telemetry receiver</title>
+<meta name="description" content="Everything needed to turn a Quansheng UV-K1, UV-K5 V3 or UV-K5 handheld into a receiver that decodes ALERT flood-warning telemetry on the radio: what to buy, which radio you have, a one-click browser installer, and how to use it.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230b7285'/%3E%3Cpath d='M16 6 L16 26 M9 12 Q16 6 23 12 M11 16 Q16 12 21 16' stroke='%23fff' stroke-width='2.4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="css/flasher.css">
+<link rel="stylesheet" href="css/guide.css">
+</head>
+<body>
+
+<header class="top hero">
+  <div class="wrap wide">
+    <h1>Turn a Quansheng handheld into an ALERT flood-telemetry receiver</h1>
+    <p class="lede">One page with everything you need: what to buy, how to tell which radio you
+       have, an installer that runs in your browser, and how to read the rain and river readings
+       the radio decodes on its own screen.</p>
+    <div class="hero-actions">
+      <a class="btn light" href="flash/">Open the installer</a>
+      <a class="btn outline" href="#need">What do I need?</a>
+    </div>
+  </div>
+</header>
+
+<nav class="toc" aria-label="Sections">
+  <ul>
+    <li><a href="#start">Short version</a></li>
+    <li><a href="#what">What it does</a></li>
+    <li><a href="#need">What you need</a></li>
+    <li><a href="#which-radio">Which radio?</a></li>
+    <li><a href="#install">Install</a></li>
+    <li><a href="#use">Using it</a></li>
+    <li><a href="#computer">Logging</a></li>
+    <li><a href="#help">Troubleshooting</a></li>
+    <li><a href="#downloads">Downloads</a></li>
+    <li><a href="#credits">Credits</a></li>
+  </ul>
+</nav>
+
+<main class="wrap wide">
+
+<!-- ─────────────────────────────── short version ─────────────────────────────── -->
+<section class="card quick" id="start">
+  <h2>The short version</h2>
+  <ol>
+    <li>Get a <strong>Quansheng UV-K1</strong> or <strong>UV-K5 V3</strong> and a
+        <strong>USB-C data cable</strong>.</li>
+    <li>On a computer, open the <a href="flash/">installer</a> in <strong>Chrome or Edge</strong>.</li>
+    <li>Follow its six steps: pick the radio, pick the firmware, connect, back up, install.</li>
+    <li>Switch the radio on. The ALERT receiver <strong>starts by itself</strong> and listens on
+        151.500&nbsp;MHz.</li>
+  </ol>
+  <p class="hint">About 15 minutes the first time. Nothing to download, nothing to compile, and
+     nothing here can permanently damage the radio.</p>
+</section>
+
+<!-- ─────────────────────────────── what it does ──────────────────────────────── -->
+<section class="card" id="what">
+  <h2>What it does</h2>
+  <p>Many flood-warning networks use <strong>ALERT</strong> (Automated Local Evaluation in Real
+     Time). Rain gauges and river-level sensors out in the catchments send a short burst of
+     data over VHF radio each time something changes: a tip of the rain bucket, or the river
+     rising or falling. Each burst carries a station number and a reading, about a third of a second of
+     warbling tones.</p>
+  <figure class="grid2">
+    <img class="photo" src="img/photos/alert-station.jpg" alt="A rain-gauge station with its radio antenna" loading="lazy">
+    <figcaption>A typical field station: a tipping-bucket rain gauge, a solar panel, and a Yagi
+       antenna pointing at the network’s repeater. <span class="credit" data-credit="alert-station.jpg"></span></figcaption>
+  </figure>
+  <p>This project turns an inexpensive Quansheng handheld into a receiver for those bursts. The
+     radio decodes each one itself and shows <strong>which station</strong> sent it, <strong>what
+     kind of sensor</strong> it is (rain, river level, battery), the <strong>value</strong>, and
+     how strong the signal was. No computer is needed once it’s installed.</p>
+  <div class="grid2">
+    <figure>
+      <img class="lcd" src="img/screens/v2-list.png" width="512" height="256" alt="Radio screen listing three decoded stations with their readings">
+      <figcaption>Readings as they arrive: station name, then its number, sensor kind, value and
+         signal strength. Captured from a UV-K5 V3 receiving the South-East Queensland network.</figcaption>
+    </figure>
+    <figure>
+      <img class="lcd" src="img/screens/v2-1x4.png" width="512" height="256" alt="Radio screen waiting for transmissions, showing frequency, noise floor and counters">
+      <figcaption>Waiting for the first burst: frequency, noise floor, bursts heard and decoded,
+         the audio path it found, and the log.</figcaption>
+    </figure>
+  </div>
+  <div class="callout warn">
+    <p><strong>A hobby receiver, not a warning service.</strong> It shows raw readings from
+       whatever it hears. For flood warnings, follow the Bureau of Meteorology and your local
+       council. The radio only <em>listens</em>: the ALERT app never transmits.</p>
+  </div>
+</section>
+
+<!-- ─────────────────────────────── what you need ─────────────────────────────── -->
+<section class="card" id="need">
+  <h2>What you need</h2>
+  <p class="sub">Three things, plus a computer for the one-off install.</p>
+
+  <div class="kit">
+    <div class="item">
+      <img src="img/photos/radio-v3.jpg" alt="Quansheng UV-K1 / UV-K5 V3 handheld radio" loading="lazy">
+      <div class="body">
+        <span class="need">Need · recommended radio</span>
+        <h3>Quansheng UV-K1 or UV-K5 V3</h3>
+        <p>The newer model, with a PY32F071 chip inside. This is the one the receiver is
+           <strong>proven on</strong>: 22 bursts decoded out of 22 in on-air testing, no
+           modification needed.</p>
+        <p class="hint">Sold as <em>UV-K1</em>, or as <em>UV-K5 V3</em> / <em>UV-K5(99)</em>.
+           When buying a “UV-K5”, ask for V3: plenty of sellers still ship the older one.</p>
+        <p class="credit" data-credit="radio-v3.jpg"></p>
+      </div>
+    </div>
+    <div class="item">
+      <img src="img/photos/usb-c-cable.jpg" alt="USB-C data cable" loading="lazy">
+      <div class="body">
+        <span class="need">Need · for a V3 / UV-K1</span>
+        <h3>A USB-C <em>data</em> cable</h3>
+        <p>Any phone or laptop USB-C cable that carries data. The V3 / UV-K1 has a real USB port, so
+           this is all it needs. The thin cable in the box is sometimes charge-only. If the computer
+           doesn’t see the radio, try another cable first.</p>
+        <p class="credit" data-credit="usb-c-cable.jpg"></p>
+      </div>
+    </div>
+    <div class="item">
+      <img src="img/photos/k-cable.jpg" alt="Two-pin Kenwood-style USB programming cable" loading="lazy">
+      <div class="body">
+        <span class="need opt">Need for an older UV-K5 · optional for a V3</span>
+        <h3>Two-pin programming cable</h3>
+        <p>The “Kenwood K1” USB cable used by Baofeng radios and CHIRP: a 3.5&nbsp;mm and a
+           2.5&nbsp;mm plug at one end. The older UV-K5 <strong>must</strong> use this, because its USB-C
+           socket only charges. Prefer one that says <strong>CH340</strong>. Or
+           <a href="cable/">build one</a>.</p>
+        <p class="credit" data-credit="k-cable.jpg"></p>
+      </div>
+    </div>
+    <div class="item">
+      <img src="img/diagrams/computer.svg" alt="A laptop running Chrome" loading="lazy">
+      <div class="body">
+        <span class="need">Need · once, to install</span>
+        <h3>A computer with Chrome or Edge</h3>
+        <p>Windows, macOS, Linux or ChromeOS. The installer talks to the radio through the
+           browser’s <em>Web Serial</em> feature, which phones, tablets, Safari and most Firefox
+           versions don’t have.</p>
+      </div>
+    </div>
+  </div>
+
+  <h3>Nice to have</h3>
+  <ul>
+    <li><strong>A better antenna.</strong> The stock antenna works if you can hear the network’s
+        repeater. For weak signals, a VHF antenna tuned near 150&nbsp;MHz, or a spot up high, helps
+        more than anything in the firmware.</li>
+    <li><strong>Python 3</strong> on the computer, if you want to log readings to a file or load
+        other regions’ station names (see <a href="#computer">Logging</a>).</li>
+  </ul>
+
+  <div class="callout warn" id="v1-status">
+    <p><strong>Already have an older UV-K5, UV-K5(8) or UV-K6?</strong> Firmware for it is
+       here too, and installing it does no harm. But it has <strong>not yet decoded a real ALERT
+       transmission</strong>. The work on the V3 later found that these networks use 1300/2100&nbsp;Hz
+       tones, not the 1200/2200&nbsp;Hz that build was written for. It also found that the radio chip’s built-in
+       modem, which the older build relies on, never locks onto them. The V3 decodes in software
+       instead. On an older UV-K5 that route needs a one-capacitor hardware modification, and
+       the software hasn’t caught up yet. <strong>If you’re buying a radio for this, buy a UV-K1 or
+       UV-K5 V3.</strong></p>
+  </div>
+</section>
+
+<!-- ─────────────────────────────── which radio ───────────────────────────────── -->
+<section class="card" id="which-radio">
+  <h2>Which radio do I have?</h2>
+  <p>From the front they look almost identical, but the two have <strong>different chips</strong>
+     and can’t run each other’s firmware. Three ways to tell, easiest first:</p>
+  <ol>
+    <li><strong>Take the battery off and read the label.</strong> A V3 has <strong>V3</strong>
+        printed beside the barcode, and the model is often <strong>UV-K5(99)</strong>. A UV-K1
+        says UV-K1.</li>
+    <li><strong>Look at the version when it switches on,</strong> or in the menu. Stock firmware
+        <strong>7.x</strong> is a V3 / UV-K1; <strong>2.x</strong> is the older UV-K5.</li>
+    <li><strong>Let the installer check.</strong> In bootloader mode the radio announces its
+        bootloader version (2.x or 7.x). The installer reads it before writing anything and
+        refuses to put the wrong firmware on.</li>
+  </ol>
+  <div class="grid2">
+    <figure>
+      <img class="photo" src="img/diagrams/label.svg" alt="Drawing of the label under the battery, with V3 printed beside the barcode" loading="lazy">
+      <figcaption>Under the battery. “V3” beside the barcode means the newer radio.</figcaption>
+    </figure>
+    <figure>
+      <img class="photo" src="img/photos/radio-v1.jpg" alt="Quansheng UV-K5(8), front view" loading="lazy">
+      <figcaption>A UV-K5(8), the older model. <span class="credit" data-credit="radio-v1.jpg"></span></figcaption>
+    </figure>
+  </div>
+  <div class="scroll-x">
+  <table class="t">
+    <thead><tr><th></th><th>UV-K1 / UV-K5 V3</th><th>UV-K5 / UV-K5(8) / UV-K6 / UV-5R Plus</th></tr></thead>
+    <tbody>
+      <tr><th>Label</th><td><strong>V3</strong> beside the barcode, often UV-K5(99); or UV-K1</td><td>no version mark</td></tr>
+      <tr><th>Stock firmware</th><td>7.x</td><td>2.x (e.g. 2.01.26)</td></tr>
+      <tr><th>Bootloader</th><td>7.x (e.g. 7.00.07)</td><td>2.x (e.g. 2.00.06)</td></tr>
+      <tr><th>Chip</th><td>PY32F071</td><td>DP32G030</td></tr>
+      <tr><th>USB-C socket</th><td>data and charging: connect with any USB-C data cable</td><td>charging only: needs the two-pin cable</td></tr>
+      <tr><th>ALERT receiver</th><td><span class="badge good">decodes on air</span> no modification</td><td><span class="badge exp">experimental</span> not yet decoding (<a href="#v1-status">why</a>)</td></tr>
+      <tr><th>Built on</th><td><a href="https://github.com/armel/uv-k1-k5v3-firmware-custom" target="_blank" rel="noopener">F4HWN Fusion port</a> (RescueOps edition)</td><td><a href="https://github.com/egzumer/uv-k5-firmware-custom" target="_blank" rel="noopener">egzumer</a> custom firmware</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- ─────────────────────────────── install ───────────────────────────────────── -->
+<section class="card" id="install">
+  <h2>Install it</h2>
+  <p>The <a href="flash/">installer</a> walks you through everything, explains each screen as you
+     go, and checks every file and every radio before it writes anything. Here’s what to expect,
+     so nothing comes as a surprise.</p>
+
+  <div class="row"><a class="btn primary" href="flash/">Open the installer</a></div>
+
+  <h3>1 · Pick your radio, then the firmware</h3>
+  <p>Choose <em>UV-K1 or UV-K5 V3</em> or the older UV-K5, then the firmware build offered for it.
+     The V3 has one build. The older UV-K5 has two, differing only in which region’s station names
+     are stored on the radio.</p>
+
+  <h3>2 · Connect</h3>
+  <p>Plug the cable in, switch the radio on normally, press <em>Connect</em>, and choose it from
+     the list the browser shows. Over USB-C a V3 / UV-K1 appears as a <em>USB Serial Device</em>;
+     the two-pin cable appears as <em>USB-SERIAL CH340</em> or similar. The page then says what
+     the radio is running.</p>
+  <p class="hint">Empty list? Over USB-C, try another cable (charge-only cables are common). With
+     the two-pin cable, install the
+     <a href="https://www.wch-ic.com/downloads/CH341SER_EXE.html" target="_blank" rel="noopener">CH340 driver</a>.
+     Either way, close CHIRP, UV Studio or any terminal program that might hold the port.</p>
+
+  <h3>3 · Back up</h3>
+  <p>One click saves your radio’s factory calibration, channels and settings to your Downloads
+     folder. The calibration is unique to your radio, so keep that file. On a V3 / UV-K1 the
+     calibration sits on a separate memory chip that installing never touches. If the backup
+     won’t run on <em>stock</em> V3 firmware, tick “skip”. The last step takes a fresh one from the
+     new firmware, which is the backup that matters.</p>
+
+  <h3>4 · Bootloader mode and install</h3>
+  <figure class="grid2">
+    <img src="img/diagrams/bootloader-mode.svg" alt="Hold the PTT button on the side, then turn the volume knob to switch the radio on" loading="lazy">
+    <figcaption><strong>Bootloader mode:</strong> radio off, hold <strong>PTT</strong>, switch on
+       with the volume knob, let go. The screen stays blank and the torch LED lights.
+       This mode lives in a part of the chip that is never overwritten, so you can always get back
+       to it.</figcaption>
+  </figure>
+  <p>Then press <em>Install firmware now</em>. With the two-pin cable the connection survives the
+     power cycle. <strong>Over USB-C the port disappears when the radio switches off</strong>: that’s
+     normal. When you press Install the browser asks for it again; pick the radio, which can show
+     under a new name in bootloader mode. Installing takes under a minute.</p>
+  <p>The installer stops before writing a single byte if the radio’s bootloader says it is the
+     other kind of radio, and offers to switch to the right firmware.</p>
+
+  <h3>5 · Done</h3>
+  <p>A V3 / UV-K1 restarts by itself into the new firmware. Press <em>Check what it is running</em>
+     to confirm it, then <em>Back up my radio</em> once more. Keep that file, named with the radio’s
+     serial number.</p>
+
+  <details class="faq">
+    <summary>Rather not use a browser?</summary>
+    <ul>
+      <li><strong>V3 / UV-K1:</strong> <a href="https://armel.github.io/uvstudio/#flash" target="_blank" rel="noopener">UV Studio</a>
+          can flash a local file: download <code>quansheng-alert-v3.bin</code> from
+          <a href="#downloads">Downloads</a> and choose it there. From the command line,
+          <code>tools/serialtool</code> in
+          <a href="https://github.com/cdomotor-g/quansheng_alert_v3" target="_blank" rel="noopener">quansheng_alert_v3</a>
+          does the same:
+          <pre class="cmd">pip install pyserial
+python tools/serialtool/cli.py flash --port COM5 quansheng-alert-v3.bin</pre></li>
+      <li><strong>Older UV-K5:</strong> <a href="https://egzumer.github.io/uvtools/" target="_blank" rel="noopener">egzumer’s uvtools</a>
+          takes the <code>.packed.bin</code>; <a href="https://github.com/sq5bpf/k5prog" target="_blank" rel="noopener">k5prog</a>
+          takes the raw <code>.bin</code>:
+          <pre class="cmd">k5prog -F -YYY -b quansheng-alert-default.bin</pre></li>
+    </ul>
+  </details>
+</section>
+
+<!-- ─────────────────────────────── using it ──────────────────────────────────── -->
+<section class="card" id="use">
+  <h2>Using the receiver</h2>
+  <div class="tabs" role="tablist">
+    <button role="tab" id="tab-v3" aria-controls="use-v3" aria-selected="true">UV-K1 / UV-K5 V3</button>
+    <button role="tab" id="tab-v1" aria-controls="use-v1" aria-selected="false">Older UV-K5</button>
+  </div>
+
+  <div class="tabpanel" id="use-v3" role="tabpanel" aria-labelledby="tab-v3">
+    <h3>Starting and stopping</h3>
+    <ul>
+      <li>It <strong>starts by itself</strong> about five seconds after you switch the radio on.</li>
+      <li>To open it by hand: <kbd>MENU</kbd>, scroll to the last item, <code>AlrtRx</code> (the
+          list wraps, so going back one from the first item gets there), then <kbd>MENU</kbd>
+          <kbd>MENU</kbd>.</li>
+      <li>Leave with <kbd>EXIT</kbd>. If you’ve scrolled down the list, the first EXIT jumps to
+          the top and the second leaves. Settings are saved as you leave.</li>
+    </ul>
+    <div class="callout bad">
+      <p><strong>Leave with EXIT, not PTT.</strong> Holding PTT also closes the app, but if you
+         keep holding it the radio goes back to normal operation with PTT pressed, and may
+         <strong>transmit</strong>, possibly on the ALERT frequency. Don’t do that.</p>
+    </div>
+
+    <h3>Frequency</h3>
+    <p>It listens on whatever frequency the radio is tuned to. If that is outside 130–174&nbsp;MHz,
+       it tunes itself to <strong>151.500&nbsp;MHz</strong>, the frequency of the South-East
+       Queensland (MegaNet) networks it was tested on. To change it inside the app:
+       <kbd>MENU</kbd>, then <kbd>MENU</kbd> down to <code>FREQ MHz</code>, and <kbd>▲</kbd>/<kbd>▼</kbd>
+       in 12.5&nbsp;kHz steps (hold to go faster). <kbd>EXIT</kbd> saves.</p>
+
+    <h3>The first time</h3>
+    <ol>
+      <li><code>SETTLING 10…1</code>: ten seconds while it measures the background noise.</li>
+      <li><code>CENSUS</code>: three or four seconds while it plays two short tones through the
+          radio’s own audio to find which input carries the receiver’s audio. Nothing is
+          transmitted. You may hear the tones. This happens until the first decode, then it
+          remembers the answer.</li>
+      <li><code>WAITING</code>: listening. The <code>AUD</code> line shows the audio path it found:
+          <code>CHK</code> until the first decode, then <code>OK</code> (e.g. <code>AUD PA4B OK</code>).</li>
+    </ol>
+    <p>Then leave it. Stations transmit when something changes, and report in regularly. On
+       test, the South-East Queensland network sent dozens of bursts in ten minutes. A quieter
+       network, or dry weather, means fewer.</p>
+
+    <h3>What’s on the screen</h3>
+    <ul>
+      <li><strong>Top line:</strong> <code>ALERT</code>, then <code>RX</code> while a signal is
+          coming in (or <code>+N</code> new readings while you’re scrolled away), the noise floor
+          (<code>NF-74</code>), <code>L</code> when logging, and the battery.</li>
+      <li><strong>The list</strong> (newest at the top, three at a time): the station name, or
+          <code>ID 4142 ?</code> if it isn’t in the radio’s table, with how long ago it was heard.
+          Under it: station number, kind (<code>RAIN</code>, <code>LVL</code>, <code>BATT</code>,
+          <code>REP</code> repeater, <code>OTH</code>, <code>CHK</code>), the value, and the signal
+          strength in dBm.</li>
+      <li><strong>Values</strong> are what the station sends. Rain is the gauge’s running count of
+          bucket tips, so the rise between two readings is the rain that fell in between. (MegaNet
+          counts 0.2&nbsp;mm a tip unless a station records otherwise.) River level is the raw sensor
+          number, scaled differently at each site. Battery is shown in volts. <code>FULL</code> means
+          2047, the sensor’s maximum: over-range or a faulty sensor.</li>
+      <li><strong>Detail view</strong> (<kbd>1</kbd>): the full name, kind, value and raw value, signal
+          and noise floor, the fade margin, the data format, and how long ago it was heard.</li>
+    </ul>
+
+    <h3>Keys</h3>
+    <div class="scroll-x">
+    <table class="t">
+      <thead><tr><th>Key</th><th>In the list / detail view</th><th>In settings</th></tr></thead>
+      <tbody>
+        <tr><th><kbd>▲</kbd> <kbd>▼</kbd></th><td>scroll one reading</td><td>change the value</td></tr>
+        <tr><th><kbd>1</kbd></th><td>open / close the detail view</td><td>—</td></tr>
+        <tr><th><kbd>MENU</kbd></th><td>open settings</td><td>next row</td></tr>
+        <tr><th><kbd>*</kbd></th><td>voice on / off (no effect in this build: see below)</td><td>previous row</td></tr>
+        <tr><th><kbd>F</kbd></th><td>speaker: <code>OFF</code> → <code>SQL</code> → <code>ON</code></td><td>—</td></tr>
+        <tr><th><kbd>EXIT</kbd></th><td>back; from the top of the list, leave the app</td><td>save and go back</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p class="hint">After 30 seconds without a key press the view goes back to the newest
+       reading. This radio has no <kbd>#</kbd> key. The bottom-right key is <kbd>F</kbd>.</p>
+
+    <h3>Settings (<kbd>MENU</kbd> inside the app)</h3>
+    <div class="scroll-x">
+    <table class="t">
+      <thead><tr><th>Row</th><th>What it does</th><th>Default</th></tr></thead>
+      <tbody>
+        <tr><th>VOICE</th><td>Read readings aloud. The published build has the voice prompts compiled out to save space, so this does nothing yet.</td><td>OFF</td></tr>
+        <tr><th>SPEAKER</th><td><code>OFF</code> silent; <code>SQL</code> you hear each burst as it arrives; <code>ON</code> you hear the channel all the time</td><td>SQL</td></tr>
+        <tr><th>CSV OUT</th><td>Send each reading to a connected computer (see <a href="#computer">Logging</a>)</td><td>ON</td></tr>
+        <tr><th>LOG</th><td>Keep every reading in the radio’s memory, about 6,000 of them, oldest dropped first</td><td>ON</td></tr>
+        <tr><th>UNKNOWN</th><td>Show or hide stations that aren’t in the radio’s table (they’re still logged)</td><td>SHOW</td></tr>
+        <tr><th>CONFIRM</th><td>Only accept a reading heard twice in the same burst. Fewer false readings, fewer readings overall</td><td>OFF</td></tr>
+        <tr><th>SQ GATE</th><td>Only count bursts at least 15&nbsp;dB above the noise, so noise isn’t mistaken for data</td><td>ON</td></tr>
+        <tr><th>SNR REQ</th><td>How much signal over noise counts as decodable; only affects the fade-margin figure</td><td>12</td></tr>
+        <tr><th>DEBUG</th><td>Extra diagnostic lines on USB</td><td>OFF</td></tr>
+        <tr><th>MDM MODE</th><td>Shows <code>ADC</code>, the software demodulator. Not adjustable</td><td>—</td></tr>
+        <tr><th>CENSUS</th><td>The audio path it chose (e.g. <code>PA4B</code>). <kbd>▲</kbd> runs the census again</td><td>—</td></tr>
+        <tr><th>FREQ MHz</th><td>Receive frequency, 130–174&nbsp;MHz in 12.5&nbsp;kHz steps</td><td>the radio’s</td></tr>
+        <tr><th>SQL LEVEL</th><td>The radio’s squelch, in tenths (0.0–9.0). It changes the radio’s main squelch too</td><td>the radio’s</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+
+  <div class="tabpanel" id="use-v1" role="tabpanel" aria-labelledby="tab-v1" hidden>
+    <div class="callout warn"><p>Experimental: this build hasn’t decoded a real transmission yet.
+       <a href="#v1-status">Here’s why.</a> It is documented in full in the
+       <a href="https://github.com/cdomotor-g/quansheng_alert#readme" target="_blank" rel="noopener">quansheng_alert README</a>.</p></div>
+    <h3>Set up, once</h3>
+    <ol>
+      <li><strong>Menu → Voice → English</strong>, so it reads readings out.</li>
+      <li><strong>Menu → Sql</strong>: this build’s squelch goes 0.0 to 9.0 in tenths. Raise it from 0.0 until the
+          hiss just goes quiet.</li>
+      <li>Tune to <strong>151.500&nbsp;MHz</strong> (or your network’s frequency), FM.</li>
+      <li>Open the receiver with <kbd>F</kbd> then <kbd>0</kbd>, from the menu item
+          <code>AlrtRx</code>, or by assigning <em>ALERT RX</em> to a side key.</li>
+    </ol>
+    <h3>Keys</h3>
+    <div class="scroll-x">
+    <table class="t">
+      <tbody>
+        <tr><th><kbd>EXIT</kbd></th><td>leave (settings are saved)</td></tr>
+        <tr><th><kbd>MENU</kbd></th><td>settings: <kbd>▲</kbd>/<kbd>▼</kbd> change, <kbd>MENU</kbd>/<kbd>*</kbd> next/previous row, <kbd>EXIT</kbd> saves</td></tr>
+        <tr><th><kbd>▲</kbd> <kbd>▼</kbd></th><td>squelch up / down in tenths</td></tr>
+        <tr><th><kbd>*</kbd></th><td>voice announcements on / off</td></tr>
+        <tr><th><kbd>F</kbd></th><td>monitor: hear the bursts</td></tr>
+        <tr><th><kbd>1</kbd></th><td>raw view: counters and the first bytes of the last capture</td></tr>
+        <tr><th><kbd>5</kbd></th><td>say the last reading again</td></tr>
+        <tr><th><kbd>0</kbd></th><td>clear history and counters</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p>Its <code>INPUT</code> setting chooses between the radio chip’s modem (<code>BK MODEM</code>,
+       the default) and a software demodulator (<code>ADC PA8</code>). The software demodulator
+       needs one 100&nbsp;nF capacitor from the BK4819’s audio output (pin 8) to the
+       microcontroller’s PA8 (pin 9). The
+       <a href="https://github.com/cdomotor-g/quansheng_alert#how-the-receiver-works" target="_blank" rel="noopener">README</a>
+       has the details and a first-field-test checklist.</p>
+  </div>
+</section>
+
+<!-- ─────────────────────────────── logging ───────────────────────────────────── -->
+<section class="card" id="computer">
+  <h2>Logging to a computer (optional)</h2>
+  <p>The radio works on its own, but plugged into a computer it can also stream every reading,
+     hand over its stored log as a spreadsheet, and take a station list for any region.</p>
+
+  <h3>UV-K1 / UV-K5 V3: <code>alertterm</code></h3>
+  <p>A small Python program in the
+     <a href="https://github.com/cdomotor-g/quansheng_alert_v3" target="_blank" rel="noopener">quansheng_alert_v3</a>
+     repository. Download the repository
+     (<a href="https://github.com/cdomotor-g/quansheng_alert_v3/archive/refs/heads/main.zip">zip</a>), install
+     <a href="https://www.python.org/downloads/" target="_blank" rel="noopener">Python 3</a>, then in a
+     terminal in that folder:</p>
+<pre class="cmd">pip install pyserial
+python tools/alert/alertterm.py live                       <span class="c"># a live table of readings, also saved to tools/alert/logs/</span>
+python tools/alert/alertterm.py log-download --csv decodes.csv   <span class="c"># everything the radio has logged</span>
+python tools/alert/alertterm.py stations-upload --all      <span class="c"># every MegaNet station's name, not just SE Queensland</span>
+python tools/alert/alertterm.py screenshot screen.png --scale 4
+python tools/alert/alertterm.py console                    <span class="c"># type HELP</span></pre>
+  <p class="hint">It finds the radio on USB-C by itself and sets the radio’s clock each time it
+     connects (the clock forgets when switched off). The ALERT app must be running. Only one program
+     can use the port at a time, so close the installer tab first. The full description of what the radio sends is
+     <a href="https://github.com/cdomotor-g/quansheng_alert_v3/blob/main/docs/ALERT_SERIAL.md" target="_blank" rel="noopener">ALERT_SERIAL.md</a>.</p>
+  <p class="hint"><strong>Station names:</strong> the radio comes with South-East Queensland’s
+     443 stations built in (Constitution Hill, Mt Glorious, Marburg and Mt Stapylton networks).
+     <code>stations-upload --all</code> downloads the full MegaNet database (about 2,600 stations)
+     and stores it in the radio, with names up to 40 characters. Other stations still decode
+     without a name; they show as <code>ID nnnn ?</code>.</p>
+
+  <h3>Older UV-K5</h3>
+  <p>Each reading is also written to the two-pin cable at 38400 baud as
+     <code>ALERT,&lt;id&gt;,&lt;value&gt;,&lt;format&gt;,&lt;rssi&gt;,&lt;name&gt;</code>. Any
+     serial terminal can capture it.</p>
+</section>
+
+<!-- ─────────────────────────────── troubleshooting ───────────────────────────── -->
+<section class="card" id="help">
+  <h2>Troubleshooting</h2>
+
+  <details class="faq">
+    <summary>The browser’s list is empty, or the radio doesn’t answer</summary>
+    <ul>
+      <li><strong>USB-C (V3 / UV-K1):</strong> try another cable, since charge-only cables are very
+          common. Make sure the radio is switched on. No driver is needed.</li>
+      <li><strong>Two-pin cable:</strong> install the CH340 driver, then push both plugs in
+          firmly. A half-seated plug is the most common fault. Cheap “PL2303” cables are often
+          counterfeit chips that Windows refuses to drive.</li>
+      <li>Close anything else that might hold the port: CHIRP, UV Studio, alertterm, a terminal,
+          another tab.</li>
+      <li>The installer’s <strong>Toolbox → Check the cable</strong> works out which side the
+          problem is on. <a href="cable/#diagnose">More on diagnosing a cable</a>.</li>
+    </ul>
+  </details>
+
+  <details class="faq">
+    <summary>It won’t go into bootloader mode</summary>
+    <p>Switch fully off first. Then hold PTT down <em>before</em> turning the knob, and keep holding
+       until the torch LED lights. The screen stays blank in bootloader mode; if the normal screen
+       appears, PTT wasn’t held in time. A flat battery can also stop it: charge first.</p>
+  </details>
+
+  <details class="faq">
+    <summary>“This radio is a UV-K5 V3 / UV-K1, and the firmware you picked is for a UV-K5” (or the other way round)</summary>
+    <p>The installer read the radio’s bootloader and stopped before writing anything. Use the
+       <em>Switch to firmware for…</em> button it shows, or go back to step 1 and pick the other
+       radio. There is deliberately no way to override this one: the result would be a radio
+       that doesn’t start (though still recoverable through bootloader mode).</p>
+  </details>
+
+  <details class="faq">
+    <summary>The install stopped half way</summary>
+    <p>Nothing is lost. The bootloader is never overwritten, so the radio still goes into
+       bootloader mode. Switch it off, hold PTT, switch on, and run the install again.</p>
+  </details>
+
+  <details class="faq">
+    <summary>It hears bursts but decodes nothing</summary>
+    <ul>
+      <li>Check the frequency (<code>FREQ MHz</code>) is your network’s.</li>
+      <li>Watch the top line: <code>RX</code> should appear during each burst, and
+          <code>BURSTS</code> should count up on the waiting screen. If bursts count but
+          <code>DEC</code> doesn’t, the signal may be too weak: try outdoors, up high, or with a
+          better antenna. The detail view’s signal and <code>FADE</code> figures show how much
+          margin you have.</li>
+      <li>If the <code>AUD</code> line says <code>OFF</code> (nothing found), turn the volume up
+          a little and re-run the census: settings → <code>CENSUS</code> → <kbd>▲</kbd>.</li>
+      <li><code>SQ GATE</code> rejects anything less than 15&nbsp;dB above the noise. That’s the
+          right setting, but it means a very weak station will be ignored rather than misread.</li>
+    </ul>
+  </details>
+
+  <details class="faq">
+    <summary>The log says <code>LOG FOREIGN</code></summary>
+    <p>The memory area the log uses already holds something written by other firmware, so the
+       app won’t touch it. If you’re sure, clear it from <code>alertterm.py console</code> with
+       <code>LOG FORMAT FORCE</code>.</p>
+  </details>
+
+  <details class="faq">
+    <summary>Going back to stock, or to other custom firmware</summary>
+    <p>Use the installer’s <em>Use my own firmware file instead</em> in step 2 with any firmware
+       file. It checks the file is for the right chip first.</p>
+    <ul>
+      <li><strong>V3 / UV-K1:</strong> F4HWN releases from
+          <a href="https://github.com/armel/uv-k1-k5v3-firmware-custom/releases" target="_blank" rel="noopener">armel/uv-k1-k5v3-firmware-custom</a>,
+          and Quansheng’s stock UV-K1 firmware 7.03.01, kept in the
+          <a href="https://github.com/cdomotor-g/quansheng_alert_v3/tree/main/archive" target="_blank" rel="noopener">archive folder</a>
+          alongside older F4HWN builds. Stock UV-K5 V3 firmware comes from Quansheng.</li>
+      <li><strong>Older UV-K5:</strong> stock firmware from Quansheng, or
+          <a href="https://github.com/egzumer/uv-k5-firmware-custom/releases" target="_blank" rel="noopener">egzumer</a>
+          and its successors.</li>
+    </ul>
+  </details>
+
+  <details class="faq">
+    <summary>CHIRP</summary>
+    <p>Custom firmware needs a matching CHIRP driver. For the V3 / UV-K1 it comes with each
+       <a href="https://github.com/armel/uv-k1-k5v3-firmware-custom/releases" target="_blank" rel="noopener">F4HWN release</a>.
+       Programming channels doesn’t affect the ALERT receiver, which keeps its settings in its own
+       memory area.</p>
+  </details>
+
+  <details class="faq">
+    <summary>The radio won’t start at all</summary>
+    <p>Firmware for the other chip, or an interrupted install, leaves a radio that won’t boot.
+       Bootloader mode still works, so install the right firmware from there. With this site’s
+       firmware, a V3 that crashes five times in a row drops into bootloader mode by itself. Only if bootloader mode itself is gone
+       (which nothing on this site can cause) does an older UV-K5 need the
+       <a href="https://github.com/cdomotor-g/quansheng_alert_v3/tree/main/tools/unbrick_k5_v1" target="_blank" rel="noopener">ST-Link unbrick kit</a>.</p>
+  </details>
+</section>
+
+<!-- ─────────────────────────────── downloads ─────────────────────────────────── -->
+<section class="card" id="downloads">
+  <h2>Downloads</h2>
+  <p>The installer fetches these for you. They’re here for other tools, for keeping a copy, and
+     for checking what you installed.</p>
+  <h3>Firmware</h3>
+  <div class="scroll-x">
+  <table class="t dl" id="dl-table">
+    <thead><tr><th>Radio</th><th>Build</th><th>File</th><th>Source</th></tr></thead>
+    <tbody>
+      <tr><td>UV-K1 / UV-K5 V3</td><td>ALERT receiver (F4HWN RescueOps)</td><td><a href="firmware/v3/quansheng-alert-v3.bin" download>quansheng-alert-v3.bin</a></td><td>quansheng_alert_v3</td></tr>
+      <tr><td>UV-K5 family</td><td>Default: Mt Kanigan and neighbours</td><td><a href="firmware/v1/quansheng-alert-default.packed.bin" download>.packed.bin</a> · <a href="firmware/v1/quansheng-alert-default.bin" download>raw .bin</a></td><td>quansheng_alert</td></tr>
+      <tr><td>UV-K5 family</td><td>South-East Queensland</td><td><a href="firmware/v1/quansheng-alert-constitution-hill.packed.bin" download>.packed.bin</a> · <a href="firmware/v1/quansheng-alert-constitution-hill.bin" download>raw .bin</a></td><td>quansheng_alert</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="hint" id="dl-note">Checksums and build details are in
+     <a href="firmware/manifest.json">firmware/manifest.json</a>. The site rebuilds the V3 firmware
+     from source and refreshes all of them every week.</p>
+
+  <h3>Tools</h3>
+  <ul>
+    <li><a href="flash/">The installer</a>: flash, back up, restore, identify, check a cable.</li>
+    <li><a href="tools/k5diag.py" download>k5diag.py</a>: command-line cable and radio
+        diagnosis (Python, <code>pip install pyserial</code>).</li>
+    <li><a href="https://github.com/cdomotor-g/quansheng_alert_v3/tree/main/tools/alert" target="_blank" rel="noopener">alertterm.py and friends</a>:
+        logging, station upload, screenshots (V3 / UV-K1).</li>
+    <li><a href="https://github.com/cdomotor-g/quansheng_alert_v3/tree/main/tools/serialtool" target="_blank" rel="noopener">serialtool</a>:
+        command-line flasher and EEPROM tool for the V3 / UV-K1.</li>
+    <li><a href="https://armel.github.io/uvstudio/" target="_blank" rel="noopener">UV Studio</a>:
+        the F4HWN project’s browser tool for the V3 / UV-K1 (flashing, calibration, screen mirroring).</li>
+    <li><a href="cable/">Build a programming cable</a>: pinout and a measure-first procedure.</li>
+  </ul>
+
+  <h3>Source code</h3>
+  <ul>
+    <li><a href="https://github.com/cdomotor-g/quansheng_alert_v3" target="_blank" rel="noopener">cdomotor-g/quansheng_alert_v3</a>: the
+        V3 / UV-K1 firmware (C, CMake), the ALERT app, and its tools.</li>
+    <li><a href="https://github.com/cdomotor-g/quansheng_alert" target="_blank" rel="noopener">cdomotor-g/quansheng_alert</a>: the
+        older UV-K5 firmware (archived; still builds and flashes).</li>
+    <li><a href="https://github.com/cdomotor-g/quansheng_alert_ALL" target="_blank" rel="noopener">cdomotor-g/quansheng_alert_ALL</a>: this
+        site and its installer.</li>
+  </ul>
+</section>
+
+<!-- ─────────────────────────────── credits ───────────────────────────────────── -->
+<section class="card" id="credits">
+  <h2>Credits</h2>
+  <p>This stands on a lot of other people’s open work:
+     <a href="https://github.com/DualTachyon/uv-k5-firmware" target="_blank" rel="noopener">DualTachyon</a> (the first open UV-K5 firmware),
+     <a href="https://github.com/egzumer/uv-k5-firmware-custom" target="_blank" rel="noopener">egzumer</a>,
+     <a href="https://github.com/armel" target="_blank" rel="noopener">armel (F4HWN)</a> and
+     <a href="https://github.com/muzkr" target="_blank" rel="noopener">muzkr</a> (the V3 / UV-K1 port and serialtool),
+     <a href="https://github.com/sq5bpf/k5prog" target="_blank" rel="noopener">k5prog</a> and
+     <a href="https://github.com/whosmatt/uvmod" target="_blank" rel="noopener">uvmod</a> (the serial protocol), and
+     MegaNet (the station database). Firmware is Apache-2.0, like its upstreams; this site is MIT.</p>
+  <h3>Photos</h3>
+  <ul class="credit" id="photo-credits">
+  </ul>
+</section>
+
+<footer class="foot">
+  <p>No tracking, no cookies, no external requests. The installer talks to your radio directly
+     over USB, and nothing is uploaded anywhere.
+     <a href="https://github.com/cdomotor-g/quansheng_alert_ALL" target="_blank" rel="noopener">Source on GitHub</a>.</p>
+</footer>
+
+</main>
+
+<script src="js/guide.js"></script>
+</body>
+</html>

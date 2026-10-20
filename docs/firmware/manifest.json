@@ -1,0 +1,63 @@
+{
+  "generated": "2026-10-19 23:54 UTC",
+  "builds": [
+    {
+      "id": "v3-alert",
+      "family": "v3",
+      "title": "ALERT receiver \u2014 UV-K5 V3 / UV-K1",
+      "description": "F4HWN RescueOps edition with the ALERT receiver app. Station names built in: Constitution Hill, Mt Glorious, Marburg, Mt Stapylton. Other regions can be loaded over USB.",
+      "badge": "Recommended",
+      "badge_kind": "good",
+      "file": "firmware/v3/quansheng-alert-v3.bin",
+      "size": 113512,
+      "sha256": "c8f5d051eb8efa5897073d36d1ec306dd2bdc2a5b88e498b0623631926082359",
+      "stations": 443,
+      "built": "2026-10-13",
+      "order": 10,
+      "source": {
+        "repo": "cdomotor-g/quansheng_alert_v3",
+        "commit": "fdd3a6a",
+        "preset": "RescueOps",
+        "options": "-DENABLE_ALERT=ON"
+      }
+    },
+    {
+      "id": "v1-default",
+      "family": "v1",
+      "title": "Default \u2014 Mt Kanigan and neighbours",
+      "description": "Wide Bay / Burnett and central Queensland: Mt Kanigan, Mt Glorious, Barcaldine.",
+      "badge": "Experimental",
+      "badge_kind": "exp",
+      "file": "firmware/v1/quansheng-alert-default.packed.bin",
+      "size": 61018,
+      "sha256": "6e1773184399fccae48d1c97f8367fca98256ec132f174400f26945b7a7062b2",
+      "stations": 379,
+      "built": "2026-09-04",
+      "order": 110,
+      "source": {
+        "repo": "cdomotor-g/quansheng_alert",
+        "commit": "7f8f06b"
+      },
+      "raw_file": "firmware/v1/quansheng-alert-default.bin"
+    },
+    {
+      "id": "v1-constitution-hill",
+      "family": "v1",
+      "title": "South-East Queensland",
+      "description": "The Constitution Hill network: Brisbane, Ipswich, Logan, Gold and Sunshine Coasts.",
+      "badge": "Experimental",
+      "badge_kind": "exp",
+      "file": "firmware/v1/quansheng-alert-constitution-hill.packed.bin",
+      "size": 60978,
+      "sha256": "67e529916fd0bf61a9a48ca2a8957b151be3213c774e778bb8284ced81dd6f10",
+      "stations": 403,
+      "built": "2026-09-04",
+      "order": 120,
+      "source": {
+        "repo": "cdomotor-g/quansheng_alert",
+        "commit": "7f8f06b"
+      },
+      "raw_file": "firmware/v1/quansheng-alert-constitution-hill.bin"
+    }
+  ]
+}

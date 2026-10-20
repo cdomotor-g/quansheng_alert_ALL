@@ -1,0 +1,87 @@
+name: Refresh firmware
+
+# This site builds no firmware of its own; it republishes the two firmware
+# repositories' builds so that one link is always current:
+#
+#   v1  cdomotor-g/quansheng_alert publishes its builds in docs/firmware/;
+#       they are copied as they are.
+#   v3  cdomotor-g/quansheng_alert_v3 only keeps CI artifacts, which expire and
+#       need a login to download, so the same build its CI makes (RescueOps,
+#       -DENABLE_ALERT=ON) is compiled here.
+#
+# SOURCE_DATE_EPOCH is pinned to the V3 commit's time, because the firmware
+# embeds __DATE__/__TIME__: with it, the same source gives the same bytes, and
+# this job commits only when the firmware really changed.
+
+on:
+  schedule:
+    - cron: '17 3 * * 1'        # Mondays 03:17 UTC
+  workflow_dispatch:
+  repository_dispatch:
+    types: [ firmware-updated ]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh-firmware
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check out the UV-K5 firmware repository
+        uses: actions/checkout@v4
+        with:
+          repository: cdomotor-g/quansheng_alert
+          path: src/v1
+
+      - name: Check out the V3 / UV-K1 firmware repository
+        uses: actions/checkout@v4
+        with:
+          repository: cdomotor-g/quansheng_alert_v3
+          path: src/v3
+
+      - name: Install the ARM toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends gcc-arm-none-eabi libnewlib-arm-none-eabi ninja-build
+
+      - name: Build the V3 ALERT firmware
+        working-directory: src/v3
+        run: |
+          export SOURCE_DATE_EPOCH=$(git log -1 --format=%ct)
+          cmake --preset RescueOps -DENABLE_ALERT=ON
+          cmake --build --preset RescueOps -j
+          BIN=build/RescueOps/f4hwn.rescueops.bin
+          test -s "$BIN"
+          for s in "ALERT SETTINGS" "SQ GATE"; do
+            strings -n 4 "$BIN" | grep -qxF "$s" || { echo "::error::'$s' missing - ENABLE_ALERT off?"; exit 1; }
+          done
+          arm-none-eabi-size build/RescueOps/f4hwn.rescueops.elf
+
+      - name: Gather both families and write the manifest
+        run: |
+          python3 tools/build_manifest.py --v1-repo src/v1 --v3-repo src/v3 \
+            --v3-bin src/v3/build/RescueOps/f4hwn.rescueops.bin
+          python3 tools/check_manifest.py
+
+      - name: Check the images with the installer's own code
+        run: node test/test_k5protocol.mjs
+
+      - name: Commit if anything changed
+        run: |
+          git add docs/firmware
+          if git diff --cached --quiet; then
+            echo "Firmware unchanged."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          V1=$(git -C src/v1 rev-parse --short HEAD)
+          V3=$(git -C src/v3 rev-parse --short HEAD)
+          git commit -m "firmware: refresh (quansheng_alert@$V1, quansheng_alert_v3@$V3)"
+          git push
