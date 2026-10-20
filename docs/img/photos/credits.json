@@ -1,9 +1,72 @@
 [
   {
-    "file": "radio-v1.jpg",
-    "shows": "Quansheng UV-K5(8), front",
-    "author": "egzumer/uv-k5-firmware-custom contributors",
-    "source": "https://github.com/egzumer/uv-k5-firmware-custom/blob/main/images/image1.png",
+    "file": "rain-gauge-station-faia-italy.jpg",
+    "shows": "Automatic rain-gauge station, Faia, Quiliano, Italy (ACRONET network)",
+    "author": "Acronet Paradigm",
+    "source": "https://www.flickr.com/photos/acronetparadigm/14793249867",
+    "license": "CC BY-SA 2.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/2.0/",
+    "modified": "resized"
+  },
+  {
+    "file": "tipping-bucket-rain-gauge-mechanism.jpg",
+    "shows": "Inside a Belfort Instruments tipping-bucket rain gauge",
+    "author": "Famartin",
+    "source": "https://commons.wikimedia.org/wiki/File:2022-06-10_17_43_59_The_interior_of_a_Belfort_Instruments_Tipping_Bucket_Rain_Gauge_at_the_National_Weather_Service_Weather_Forecast_Office_Philadelphia-Mount_Holly_in_Westampton_Township,_Burlington_County,_New_Jersey.jpg",
+    "license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "modified": "resized"
+  },
+  {
+    "file": "uv-k5-8-angled.jpg",
+    "shows": "Quansheng UV-K5(8) running custom firmware",
+    "author": "kamilsss655 / uv-k5-firmware-custom",
+    "source": "https://github.com/kamilsss655/uv-k5-firmware-custom/blob/main/images/radio_picture.jpg",
+    "license": "Apache-2.0",
+    "license_url": "https://www.apache.org/licenses/LICENSE-2.0",
+    "modified": "resized"
+  },
+  {
+    "file": "usb-a-to-usb-c-cable.jpg",
+    "shows": "USB-A to USB-C cable",
+    "author": "Fructibus",
+    "source": "https://commons.wikimedia.org/wiki/File:USB-C_cable_2017_A.jpg",
+    "license": "CC0 1.0",
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "modified": "resized"
+  },
+  {
+    "file": "k-plug-2-pin-connector.jpg",
+    "shows": "Two-pin Kenwood-style plug from a Baofeng programming cable",
+    "author": "Benlisquare",
+    "source": "https://commons.wikimedia.org/wiki/File:Audio_jack_comparison.jpg",
+    "license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "modified": "cropped and resized"
+  },
+  {
+    "file": "baofeng-uv-5r-with-k-plug-speaker-mic.jpg",
+    "shows": "Baofeng UV-5R with a two-pin plug in its side socket",
+    "author": "Gustavo Belemmi",
+    "source": "https://commons.wikimedia.org/wiki/File:Baofeng_UV-5R_con_micr%C3%B3fono-parlante_externo_y_una_antena_alternativa.jpg",
+    "license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "modified": "resized"
+  },
+  {
+    "file": "uv-k6-and-uv-k5-8-side-by-side.jpg",
+    "shows": "Two radios of the older Quansheng family running F4HWN firmware",
+    "author": "Armel Fauveau (F4HWN) / uv-k5-firmware-custom-feat-F4HWN",
+    "source": "https://github.com/armel/uv-k5-firmware-custom-feat-F4HWN/blob/main/photos/IMG_3291.png",
+    "license": "Apache-2.0",
+    "license_url": "https://www.apache.org/licenses/LICENSE-2.0",
+    "modified": "converted to JPEG and resized"
+  },
+  {
+    "file": "uv-k1-py32f071-chip-and-usb-c.jpg",
+    "shows": "Inside a Quansheng UV-K1: the PY32F071 chip and USB-C socket",
+    "author": "Armel Fauveau (F4HWN) / k1-teardown",
+    "source": "https://github.com/armel/k1-teardown/blob/main/teardown/K1_VIEW_C_VERSO.png",
     "license": "Apache-2.0",
     "license_url": "https://www.apache.org/licenses/LICENSE-2.0",
     "modified": "resized"

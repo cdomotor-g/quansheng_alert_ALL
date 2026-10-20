@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 210" role="img" aria-labelledby="t d">
+  <title id="t">Label of an older UV-K5(8)</title>
+  <desc id="d">Simplified label reading Model UV-K5(8) with a barcode and no version mark.</desc>
+  <style>
+    .lab{fill:#f6f7f8;stroke:#9aa7b1;stroke-width:2}.h{font:700 15px system-ui,-apple-system,Segoe UI,Roboto,sans-serif;fill:#16212b}
+    .s{font:400 13px system-ui,-apple-system,Segoe UI,Roboto,sans-serif;fill:#3b4a56}.bar{fill:#16212b}
+    .v3{font:800 26px system-ui,sans-serif;fill:#b32d1f}.ring{fill:none;stroke:#b32d1f;stroke-width:3}
+  </style>
+  <rect width="260" height="210" fill="#ffffff"/>
+  <rect class="lab" x="20" y="10" width="220" height="190" rx="8"/>
+  <text class="h" x="36" y="38">QUANSHENG</text>
+  <text class="s" x="36" y="60">Model: UV-K5(8)</text>
+  <text class="s" x="36" y="80">S/N: ••••••••••</text>
+  <g transform="translate(36,98)"><rect class="bar" x="0" width="3" height="54"/><rect class="bar" x="6" width="2" height="54"/><rect class="bar" x="11" width="4" height="54"/><rect class="bar" x="18" width="2" height="54"/><rect class="bar" x="23" width="3" height="54"/><rect class="bar" x="29" width="5" height="54"/><rect class="bar" x="37" width="2" height="54"/><rect class="bar" x="42" width="3" height="54"/><rect class="bar" x="48" width="2" height="54"/><rect class="bar" x="53" width="4" height="54"/><rect class="bar" x="60" width="2" height="54"/><rect class="bar" x="65" width="3" height="54"/><rect class="bar" x="71" width="2" height="54"/><rect class="bar" x="76" width="5" height="54"/><rect class="bar" x="84" width="2" height="54"/><rect class="bar" x="89" width="3" height="54"/><rect class="bar" x="95" width="2" height="54"/><rect class="bar" x="100" width="4" height="54"/><rect class="bar" x="107" width="2" height="54"/><rect class="bar" x="112" width="3" height="54"/><rect class="bar" x="118" width="2" height="54"/></g>
+  
+  <text class="s" x="36" y="182">no version mark</text>
+</svg>

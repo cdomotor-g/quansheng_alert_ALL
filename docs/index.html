@@ -64,11 +64,21 @@
      data over VHF radio each time something changes: a tip of the rain bucket, or the river
      rising or falling. Each burst carries a station number and a reading, about a third of a second of
      warbling tones.</p>
-  <figure class="grid2">
-    <img class="photo" src="img/photos/alert-station.jpg" alt="A rain-gauge station with its radio antenna" loading="lazy">
-    <figcaption>A typical field station: a tipping-bucket rain gauge, a solar panel, and a Yagi
-       antenna pointing at the network’s repeater. <span class="credit" data-credit="alert-station.jpg"></span></figcaption>
-  </figure>
+  <div class="grid2">
+    <figure>
+      <img class="photo" src="img/photos/rain-gauge-station-faia-italy.jpg" width="1000" height="750"
+           alt="A fenced automatic rain-gauge station with a solar panel and a logger box" loading="lazy">
+      <figcaption>An automatic rain-gauge station: the gauge on its post, a solar panel and a
+         logger box. This one is in Italy; ALERT stations are built along the same lines, with a
+         radio that sends each reading. <span class="credit" data-credit="rain-gauge-station-faia-italy.jpg"></span></figcaption>
+    </figure>
+    <figure>
+      <img class="photo" src="img/photos/tipping-bucket-rain-gauge-mechanism.jpg" width="1000" height="750"
+           alt="Inside a rain gauge: a funnel above a small see-saw bucket" loading="lazy">
+      <figcaption>Inside a tipping-bucket gauge. Rain runs down the funnel into the see-saw, which
+         tips each time it fills, and every tip is counted. <span class="credit" data-credit="tipping-bucket-rain-gauge-mechanism.jpg"></span></figcaption>
+    </figure>
+  </div>
   <p>This project turns an inexpensive Quansheng handheld into a receiver for those bursts. The
      radio decodes each one itself and shows <strong>which station</strong> sent it, <strong>what
      kind of sensor</strong> it is (rain, river level, battery), the <strong>value</strong>, and
@@ -99,7 +109,7 @@
 
   <div class="kit">
     <div class="item">
-      <img src="img/photos/radio-v3.jpg" alt="Quansheng UV-K1 / UV-K5 V3 handheld radio" loading="lazy">
+      <img src="img/photos/uv-k5-8-angled.jpg" alt="Quansheng UV-K5 family handheld radio with an orange backlit screen" loading="lazy">
       <div class="body">
         <span class="need">Need · recommended radio</span>
         <h3>Quansheng UV-K1 or UV-K5 V3</h3>
@@ -107,23 +117,24 @@
            <strong>proven on</strong>: 22 bursts decoded out of 22 in on-air testing, no
            modification needed.</p>
         <p class="hint">Sold as <em>UV-K1</em>, or as <em>UV-K5 V3</em> / <em>UV-K5(99)</em>.
-           When buying a “UV-K5”, ask for V3: plenty of sellers still ship the older one.</p>
-        <p class="credit" data-credit="radio-v3.jpg"></p>
+           When buying a “UV-K5”, ask for V3: plenty of sellers still ship the older one, and
+           from the outside a V3 can look just like the UV-K5(8) pictured.</p>
+        <p class="credit" data-credit="uv-k5-8-angled.jpg"></p>
       </div>
     </div>
     <div class="item">
-      <img src="img/photos/usb-c-cable.jpg" alt="USB-C data cable" loading="lazy">
+      <img src="img/photos/usb-a-to-usb-c-cable.jpg" alt="A white USB-A to USB-C cable" loading="lazy">
       <div class="body">
         <span class="need">Need · for a V3 / UV-K1</span>
         <h3>A USB-C <em>data</em> cable</h3>
         <p>Any phone or laptop USB-C cable that carries data. The V3 / UV-K1 has a real USB port, so
            this is all it needs. The thin cable in the box is sometimes charge-only. If the computer
            doesn’t see the radio, try another cable first.</p>
-        <p class="credit" data-credit="usb-c-cable.jpg"></p>
+        <p class="credit" data-credit="usb-a-to-usb-c-cable.jpg"></p>
       </div>
     </div>
     <div class="item">
-      <img src="img/photos/k-cable.jpg" alt="Two-pin Kenwood-style USB programming cable" loading="lazy">
+      <img src="img/photos/k-plug-2-pin-connector.jpg" alt="The two-pin plug of a programming cable: a 2.5 mm and a 3.5 mm plug side by side" loading="lazy">
       <div class="body">
         <span class="need opt">Need for an older UV-K5 · optional for a V3</span>
         <h3>Two-pin programming cable</h3>
@@ -131,7 +142,7 @@
            2.5&nbsp;mm plug at one end. The older UV-K5 <strong>must</strong> use this, because its USB-C
            socket only charges. Prefer one that says <strong>CH340</strong>. Or
            <a href="cable/">build one</a>.</p>
-        <p class="credit" data-credit="k-cable.jpg"></p>
+        <p class="credit" data-credit="k-plug-2-pin-connector.jpg"></p>
       </div>
     </div>
     <div class="item">
@@ -170,26 +181,37 @@
 <!-- ─────────────────────────────── which radio ───────────────────────────────── -->
 <section class="card" id="which-radio">
   <h2>Which radio do I have?</h2>
-  <p>From the front they look almost identical, but the two have <strong>different chips</strong>
+  <p>From the front they can look almost identical, but the two have <strong>different chips</strong>
      and can’t run each other’s firmware. Three ways to tell, easiest first:</p>
   <ol>
     <li><strong>Take the battery off and read the label.</strong> A V3 has <strong>V3</strong>
         printed beside the barcode, and the model is often <strong>UV-K5(99)</strong>. A UV-K1
         says UV-K1.</li>
-    <li><strong>Look at the version when it switches on,</strong> or in the menu. Stock firmware
-        <strong>7.x</strong> is a V3 / UV-K1; <strong>2.x</strong> is the older UV-K5.</li>
+    <li><strong>Check the firmware version,</strong> if it still has the stock firmware. The
+        installer’s <em>Connect</em> step reads it out: <strong>7.x</strong> is a V3 / UV-K1, and
+        <strong>2.x</strong> is the older UV-K5.</li>
     <li><strong>Let the installer check.</strong> In bootloader mode the radio announces its
         bootloader version (2.x or 7.x). The installer reads it before writing anything and
         refuses to put the wrong firmware on.</li>
   </ol>
+  <figure>
+    <img class="photo" src="img/diagrams/label.svg" width="520" height="300" alt="Drawing of the label under the battery, with V3 printed beside the barcode" loading="lazy">
+    <figcaption>Under the battery. “V3” beside the barcode means the newer radio.</figcaption>
+  </figure>
   <div class="grid2">
     <figure>
-      <img class="photo" src="img/diagrams/label.svg" alt="Drawing of the label under the battery, with V3 printed beside the barcode" loading="lazy">
-      <figcaption>Under the battery. “V3” beside the barcode means the newer radio.</figcaption>
+      <img class="photo" src="img/photos/uv-k1-py32f071-chip-and-usb-c.jpg" width="1000" height="750"
+           alt="Circuit board close-up showing a chip marked PY32F071 next to a USB-C socket" loading="lazy">
+      <figcaption>The real difference is inside. This is a UV-K1’s board: the
+         <strong>PY32F071</strong> chip (top left) and a USB-C socket wired for data.
+         <span class="credit" data-credit="uv-k1-py32f071-chip-and-usb-c.jpg"></span></figcaption>
     </figure>
     <figure>
-      <img class="photo" src="img/photos/radio-v1.jpg" alt="Quansheng UV-K5(8), front view" loading="lazy">
-      <figcaption>A UV-K5(8), the older model. <span class="credit" data-credit="radio-v1.jpg"></span></figcaption>
+      <img class="photo" src="img/photos/uv-k6-and-uv-k5-8-side-by-side.jpg" width="1000" height="750"
+           alt="Two Quansheng handhelds side by side, slightly different bodies, both with custom firmware" loading="lazy">
+      <figcaption>The older family comes in a few bodies, and a V3 can look just like them from
+         the front, so the label is the reliable test.
+         <span class="credit" data-credit="uv-k6-and-uv-k5-8-side-by-side.jpg"></span></figcaption>
     </figure>
   </div>
   <div class="scroll-x">
@@ -227,6 +249,14 @@
      the list the browser shows. Over USB-C a V3 / UV-K1 appears as a <em>USB Serial Device</em>;
      the two-pin cable appears as <em>USB-SERIAL CH340</em> or similar. The page then says what
      the radio is running.</p>
+  <figure class="grid2">
+    <img class="photo" src="img/photos/baofeng-uv-5r-with-k-plug-speaker-mic.jpg" width="907" height="1000"
+         alt="A handheld radio with a two-pin plug pushed into the socket on its side" loading="lazy">
+    <figcaption>The two-pin plug goes into the socket on the radio’s side (under the rubber
+       flap on a Quansheng). Shown on a Baofeng, which uses the same socket. Push it all the way
+       in: a half-seated plug is the most common reason the radio doesn’t answer.
+       <span class="credit" data-credit="baofeng-uv-5r-with-k-plug-speaker-mic.jpg"></span></figcaption>
+  </figure>
   <p class="hint">Empty list? Over USB-C, try another cable (charge-only cables are common). With
      the two-pin cable, install the
      <a href="https://www.wch-ic.com/downloads/CH341SER_EXE.html" target="_blank" rel="noopener">CH340 driver</a>.
