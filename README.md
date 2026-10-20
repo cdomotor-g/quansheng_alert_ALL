@@ -97,6 +97,10 @@ from a branch**, **Branch: `main`**, **Folder: `/docs`** → **Save**. A minute
 later it is live at `https://cdomotor-g.github.io/quansheng_alert_ALL/`, and
 every push updates it.
 
+The folder must be `/docs`. With `/ (root)` the site URL shows this README and
+the installer's paths 404; the root `index.html` then forwards visitors to
+`docs/` as a stopgap, but links straight to `/flash/` still break.
+
 ## Credits and licences
 
 The installer grew out of the one in
