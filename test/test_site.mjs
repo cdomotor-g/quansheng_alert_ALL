@@ -54,7 +54,8 @@ const browser = await chromium.launch(executablePath ? { executablePath } : {});
 try {
 	for (const [path, label] of [['', 'guide'], ['flash/', 'installer'], ['cable/', 'cable page']]) {
 		console.log(`site: ${label}`);
-		const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
+		// 360 px: a small phone, and a margin for CI fonts that set wider than a desktop's
+		const page = await browser.newPage({ viewport: { width: 360, height: 800 } });
 		const errors = [];
 		page.on('pageerror', e => errors.push(e.message));
 		page.on('console', m => { if (m.type() === 'error') errors.push(m.text()); });
@@ -83,7 +84,10 @@ try {
 			.map(a => a.getAttribute('href').slice(1)).filter(id => id && !document.getElementById(id)));
 		check('every in-page anchor has a target', anchors.length === 0, anchors.join(', '));
 
-		const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+		const overflow = await page.evaluate(() => {
+			document.querySelectorAll('details').forEach(d => { d.open = true; });
+			return document.documentElement.scrollWidth - window.innerWidth;
+		});
 		check('nothing scrolls sideways on a phone', overflow <= 1, `${overflow}px too wide`);
 
 		if (label === 'guide') {
