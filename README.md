@@ -20,7 +20,7 @@ screen. The site has:
 | Radio | Chip | Firmware comes from | Status |
 |---|---|---|---|
 | UV-K1, UV-K5 V3 (`UV-K5(99)`), bootloader 7.x | PY32F071 | [quansheng_alert_v3](https://github.com/cdomotor-g/quansheng_alert_v3) | decodes on air, no modification |
-| UV-K5, UV-K5(8), UV-K6, UV-5R Plus, bootloader 2.x | DP32G030 | [quansheng_alert](https://github.com/cdomotor-g/quansheng_alert) (archived) | experimental, not yet decoding |
+| UV-K5, UV-K5(8), UV-K6, UV-5R Plus, bootloader 2.x | DP32G030 | [quansheng_alert](https://github.com/cdomotor-g/quansheng_alert) (archived) | experimental: V3 decoder, needs a one-capacitor mod, not yet tried on air |
 
 This repository holds no firmware source. It is the front door for the two
 repositories above.

@@ -168,13 +168,11 @@
 
   <div class="callout warn" id="v1-status">
     <p><strong>Already have an older UV-K5, UV-K5(8) or UV-K6?</strong> Firmware for it is
-       here too, and installing it does no harm. But it has <strong>not yet decoded a real ALERT
-       transmission</strong>. The work on the V3 later found that these networks use 1300/2100&nbsp;Hz
-       tones, not the 1200/2200&nbsp;Hz that build was written for. It also found that the radio chip’s built-in
-       modem, which the older build relies on, never locks onto them. The V3 decodes in software
-       instead. On an older UV-K5 that route needs a one-capacitor hardware modification, and
-       the software hasn’t caught up yet. <strong>If you’re buying a radio for this, buy a UV-K1 or
-       UV-K5 V3.</strong></p>
+       here too, and it now uses the same decoder that works on air on the V3. The catch is the
+       audio. A V3 routes the receiver’s audio to the chip that decodes it by itself, but the older
+       radio doesn’t, so it needs a <strong>one-capacitor hardware modification</strong> (a
+       soldering job inside the radio). Nobody has tried a modified UV-K5 next to an ALERT
+       transmitter yet. <strong>If you’re buying a radio for this, buy a UV-K1 or UV-K5 V3.</strong></p>
   </div>
 </section>
 
@@ -223,7 +221,7 @@
       <tr><th>Bootloader</th><td>7.x (e.g. 7.00.07)</td><td>2.x (e.g. 2.00.06)</td></tr>
       <tr><th>Chip</th><td>PY32F071</td><td>DP32G030</td></tr>
       <tr><th>USB-C socket</th><td>data and charging: connect with any USB-C data cable</td><td>charging only: needs the two-pin cable</td></tr>
-      <tr><th>ALERT receiver</th><td><span class="badge good">decodes on air</span> no modification</td><td><span class="badge exp">experimental</span> not yet decoding (<a href="#v1-status">why</a>)</td></tr>
+      <tr><th>ALERT receiver</th><td><span class="badge good">decodes on air</span> no modification</td><td><span class="badge exp">experimental</span> needs a one-capacitor mod; not yet tried on air (<a href="#v1-status">why</a>)</td></tr>
       <tr><th>Built on</th><td><a href="https://github.com/armel/uv-k1-k5v3-firmware-custom" target="_blank" rel="noopener">F4HWN Fusion port</a> (RescueOps edition)</td><td><a href="https://github.com/egzumer/uv-k5-firmware-custom" target="_blank" rel="noopener">egzumer</a> custom firmware</td></tr>
     </tbody>
   </table>
@@ -413,9 +411,17 @@ python tools/serialtool/cli.py flash --port COM5 quansheng-alert-v3.bin</pre></l
   </div>
 
   <div class="tabpanel" id="use-v1" role="tabpanel" aria-labelledby="tab-v1" hidden>
-    <div class="callout warn"><p>Experimental: this build hasn’t decoded a real transmission yet.
-       <a href="#v1-status">Here’s why.</a> It is documented in full in the
+    <div class="callout warn"><p>Experimental: it decodes only with the hardware mod below fitted,
+       and a modified radio hasn’t been tried on air yet. <a href="#v1-status">Here’s why.</a> The full
+       details are in the
        <a href="https://github.com/cdomotor-g/quansheng_alert#readme" target="_blank" rel="noopener">quansheng_alert README</a>.</p></div>
+    <h3>The hardware mod</h3>
+    <p>One <strong>100&nbsp;nF capacitor</strong> from the BK4819’s audio output (pin&nbsp;8, EARO) to the
+       microcontroller’s PA8 (pin&nbsp;9). PA8 is also the programming cable’s receive line. While
+       the ALERT app runs it becomes the audio input, so the installer and CHIRP can’t talk to the
+       radio until you leave the app. The
+       <a href="https://github.com/cdomotor-g/quansheng_alert#the-hardware-mod" target="_blank" rel="noopener">README</a>
+       explains how to read the raw view to check the mod is working.</p>
     <h3>Set up, once</h3>
     <ol>
       <li><strong>Menu → Voice → English</strong>, so it reads readings out.</li>
@@ -433,19 +439,19 @@ python tools/serialtool/cli.py flash --port COM5 quansheng-alert-v3.bin</pre></l
         <tr><th><kbd>MENU</kbd></th><td>settings: <kbd>▲</kbd>/<kbd>▼</kbd> change, <kbd>MENU</kbd>/<kbd>*</kbd> next/previous row, <kbd>EXIT</kbd> saves</td></tr>
         <tr><th><kbd>▲</kbd> <kbd>▼</kbd></th><td>squelch up / down in tenths</td></tr>
         <tr><th><kbd>*</kbd></th><td>voice announcements on / off</td></tr>
-        <tr><th><kbd>F</kbd></th><td>monitor: hear the bursts</td></tr>
-        <tr><th><kbd>1</kbd></th><td>raw view: counters and the first bytes of the last capture</td></tr>
+        <tr><th><kbd>F</kbd></th><td>monitor: the speaker opens with the squelch, so you hear each burst</td></tr>
+        <tr><th><kbd>1</kbd></th><td>raw view: bursts heard and decoded, signal and noise floor, and the audio
+            level the mod delivered (<code>ADC lo-hi</code>)</td></tr>
         <tr><th><kbd>5</kbd></th><td>say the last reading again</td></tr>
         <tr><th><kbd>0</kbd></th><td>clear history and counters</td></tr>
       </tbody>
     </table>
     </div>
-    <p>Its <code>INPUT</code> setting chooses between the radio chip’s modem (<code>BK MODEM</code>,
-       the default) and a software demodulator (<code>ADC PA8</code>). The software demodulator
-       needs one 100&nbsp;nF capacitor from the BK4819’s audio output (pin 8) to the
-       microcontroller’s PA8 (pin 9). The
-       <a href="https://github.com/cdomotor-g/quansheng_alert#how-the-receiver-works" target="_blank" rel="noopener">README</a>
-       has the details and a first-field-test checklist.</p>
+    <p>Settings (<kbd>MENU</kbd>): <code>VOICE</code>, <code>SQ GATE</code>, <code>UNKNOWN</code>,
+       <code>CONFIRM</code>, <code>MONITOR</code> and <code>SQL LEVEL</code>, which mean the same as on
+       the V3. The
+       <a href="https://github.com/cdomotor-g/quansheng_alert#first-field-test" target="_blank" rel="noopener">first field test</a>
+       checklist says what to look for and what to report.</p>
   </div>
 </section>
 
@@ -481,7 +487,8 @@ python tools/alert/alertterm.py console                    <span class="c"># typ
   <h3>Older UV-K5</h3>
   <p>Each reading is also written to the two-pin cable at 38400 baud as
      <code>ALERT,&lt;id&gt;,&lt;value&gt;,&lt;format&gt;,&lt;rssi&gt;,&lt;name&gt;</code>. Any
-     serial terminal can capture it.</p>
+     serial terminal can capture it. Only the radio’s transmit line is used: its receive line is
+     the mod’s audio input while the app runs.</p>
 </section>
 
 <!-- ─────────────────────────────── troubleshooting ───────────────────────────── -->
