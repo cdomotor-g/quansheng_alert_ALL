@@ -1,0 +1,200 @@
+{
+  "$schema": "https://cdomotor-g.github.io/atlas/schema/atlas.schema.json",
+  "atlas": 1,
+  "id": "quansheng-all",
+  "repo": "cdomotor-g/quansheng_alert_ALL",
+  "name": "ALERT Radio Setup",
+  "tagline": "Front door for Quansheng ALERT receivers: setup guide, browser installer for both radio families, firmware refreshed weekly.",
+  "about": "The one link to give anyone who wants a Quansheng handheld that decodes ALERT flood telemetry. It has a setup guide (what to buy, which radio you have, every screen, key and setting, logging to a computer), a Chrome/Edge Web Serial installer that backs up and flashes both the UV-K5 V3 / UV-K1 and the older UV-K5, and the firmware itself, rebuilt from source every week. It holds no firmware source of its own.",
+  "kind": "static site + Web Serial installer",
+  "logo": "docs/img/photos/uv-k5-8-angled.jpg",
+  "site": "https://cdomotor-g.github.io/quansheng_alert_ALL/",
+  "docs": {
+    "readme": "README.md",
+    "guide": "docs/index.html",
+    "manifest": "docs/firmware/manifest.json",
+    "photo-credits": "docs/img/photos/credits.json"
+  },
+  "status": {
+    "phase": "live",
+    "updated": "2026-10-31",
+    "summary": "Guide, two-family installer and weekly firmware refresh all shipped on 20 October, but Pages still serves the repository root, so /flash/ links 404.",
+    "next": [
+      "Delete the root index.html forward once Pages serves /docs",
+      "Drop the UV-K5 builds' Experimental badge once a modded radio decodes on air"
+    ],
+    "blocked": [
+      {
+        "what": "Set GitHub Pages to branch main, folder /docs (Settings, Pages); until then /flash/?radio=v3 links 404",
+        "on": "human"
+      }
+    ]
+  },
+  "components": [
+    {
+      "id": "guide",
+      "name": "Setup guide",
+      "what": "One page: what ALERT is, what to buy, how to tell a V3 from a UV-K5, installing, every screen, key and setting, logging, troubleshooting, downloads.",
+      "paths": ["docs/index.html", "docs/js/guide.js", "docs/css/guide.css", "docs/img/", "index.html"],
+      "url": "https://cdomotor-g.github.io/quansheng_alert_ALL/",
+      "status": "live"
+    },
+    {
+      "id": "installer",
+      "name": "Browser installer",
+      "what": "Wizard that reads the bootloader, refuses firmware for the other chip, backs the radio up, flashes it and checks the result.",
+      "paths": ["docs/flash/", "docs/js/installer.js", "docs/css/flasher.css"],
+      "url": "https://cdomotor-g.github.io/quansheng_alert_ALL/docs/flash/",
+      "status": "live"
+    },
+    {
+      "id": "protocol",
+      "name": "Bootloader protocol",
+      "what": "Framing, obfuscation, image checks and commands for both bootloaders (2.x and 7.x), checked against serialtool and k5prog vectors.",
+      "paths": ["docs/js/k5protocol.js"],
+      "status": "live"
+    },
+    {
+      "id": "transport",
+      "name": "Web Serial transport",
+      "what": "Talks to the radio over Web Serial: backup, restore and flash for both families, including the V3's USB-C port that changes id.",
+      "paths": ["docs/js/k5radio.js"],
+      "status": "live"
+    },
+    {
+      "id": "firmware",
+      "name": "Published firmware",
+      "what": "The V3 build and the UV-K5 builds, with a manifest giving each one's size, sha256, station count and source commit.",
+      "paths": ["docs/firmware/"],
+      "status": "live"
+    },
+    {
+      "id": "refresh",
+      "name": "Weekly firmware refresh",
+      "what": "Every Monday (or on dispatch) copies the UV-K5 builds, compiles the V3 build reproducibly, rewrites the manifest and commits only real changes.",
+      "paths": [".github/workflows/refresh-firmware.yml", "tools/build_manifest.py", "tools/check_manifest.py"],
+      "status": "live"
+    },
+    {
+      "id": "cable",
+      "name": "Cable tools",
+      "what": "A guide to building a two-pin programming cable and k5diag.py, a command-line cable and radio check.",
+      "paths": ["docs/cable/", "docs/tools/k5diag.py"],
+      "status": "live"
+    },
+    {
+      "id": "tests",
+      "name": "Tests",
+      "what": "Protocol vectors, the whole installer driven against simulated radios of both kinds, the guide page, and the manifest check.",
+      "paths": ["test/", ".github/workflows/test.yml", "package.json"],
+      "status": "live"
+    }
+  ],
+  "provides": [
+    {
+      "id": "setup-site",
+      "name": "Setup guide and installer",
+      "what": "The one link for setting up a radio; the V3 and UV-K5 firmware READMEs send people here, and to /flash/?radio=v3 or v1.",
+      "component": "guide",
+      "paths": ["docs/index.html", "docs/flash/index.html", "docs/js/installer.js"],
+      "url": "https://cdomotor-g.github.io/quansheng_alert_ALL/"
+    },
+    {
+      "id": "firmware-builds",
+      "name": "Published firmware and manifest",
+      "what": "Current builds for both families; manifest.json lists each file with its sha256, size, station count and source commit. Served at firmware/manifest.json under the site once Pages serves /docs.",
+      "component": "firmware",
+      "paths": ["docs/firmware/manifest.json", "docs/firmware/v3/", "docs/firmware/v1/"],
+      "contract": "tools/check_manifest.py"
+    },
+    {
+      "id": "refresh-dispatch",
+      "name": "firmware-updated dispatch",
+      "what": "A repository_dispatch of type firmware-updated rebuilds and republishes straight away instead of waiting for Monday.",
+      "component": "refresh",
+      "paths": [".github/workflows/refresh-firmware.yml"]
+    }
+  ],
+  "consumes": [
+    {
+      "id": "v3-firmware",
+      "from": "quansheng-v3",
+      "provider": "firmware",
+      "into": "refresh",
+      "what": "The UV-K5 V3 / UV-K1 ALERT firmware, compiled here (RescueOps, -DENABLE_ALERT=ON) into docs/firmware/v3/.",
+      "how": "built",
+      "watch": ["App/", "Core/", "Drivers/", "Middlewares/", "cmake/", "CMakeLists.txt", "CMakePresets.json", "filters/stations.filter"],
+      "since": {
+        "file": "docs/firmware/manifest.json",
+        "pattern": "\"repo\":\\s*\"cdomotor-g/quansheng_alert_v3\",\\s*\"commit\":\\s*\"([0-9a-f]+)\""
+      },
+      "on_change": "Nothing by hand, so no drift issue: refresh-firmware.yml rebuilds it every Monday 03:17 UTC and on a firmware-updated dispatch, committing only if the bytes change. To publish sooner: gh workflow run refresh-firmware.yml --ref main -R cdomotor-g/quansheng_alert_ALL.",
+      "drift_issue": false
+    },
+    {
+      "id": "v1-firmware",
+      "from": "quansheng-v1",
+      "provider": "published-builds",
+      "into": "refresh",
+      "what": "The UV-K5 builds quansheng_alert publishes in its docs/firmware/, copied as they are into docs/firmware/v1/.",
+      "how": "vendored",
+      "watch": ["docs/firmware/"],
+      "since": { "commit": "e922375" },
+      "on_change": "Nothing by hand, so no drift issue: the same weekly refresh copies them. quansheng_alert is archived, so they no longer change.",
+      "drift_issue": false
+    },
+    {
+      "id": "v3-screens",
+      "from": "quansheng-v3",
+      "provider": "screens",
+      "into": "guide",
+      "what": "Screen captures of the V3 receiver, copied into docs/img/screens/ for the guide.",
+      "how": "vendored",
+      "watch": ["tools/alert/screens/"],
+      "since": { "date": "2026-10-20" },
+      "on_change": "Copy the new or changed PNGs into docs/img/screens/ and check the guide's captions.",
+      "drift_issue": true
+    },
+    {
+      "id": "v3-receiver-docs",
+      "from": "quansheng-v3",
+      "provider": "serial-protocol",
+      "into": "guide",
+      "what": "The guide's account of the V3 receiver: screens, keys, settings, the 443 built-in stations, and logging with alertterm.py.",
+      "how": "reference",
+      "watch": ["tools/alert/V2_SPEC.md", "docs/ALERT_SERIAL.md", "tools/alert/alertterm.py", "App/app/alert_ui.c", "App/app/alert.c", "filters/stations.filter"],
+      "since": { "date": "2026-10-20" },
+      "on_change": "Re-read the guide's V3 screens, keys, settings and logging sections against the change and update them."
+    },
+    {
+      "id": "v1-installer",
+      "from": "quansheng-v1",
+      "provider": "installer",
+      "into": "installer",
+      "what": "The UV-K5 installer and cable page, extended here to both radio families.",
+      "how": "ported",
+      "watch": ["docs/js/", "docs/cable/"],
+      "since": { "commit": "e922375" },
+      "on_change": "Nothing: taken once and now independent; quansheng_alert is archived."
+    },
+    {
+      "id": "v1-k5diag",
+      "from": "quansheng-v1",
+      "provider": "installer",
+      "into": "cable",
+      "what": "k5diag.py, the command-line cable and radio check, a verbatim copy.",
+      "how": "vendored",
+      "watch": ["tools/k5diag.py"],
+      "since": { "commit": "e922375" },
+      "on_change": "Copy tools/k5diag.py over docs/tools/k5diag.py (identical today)."
+    }
+  ],
+  "asks": [
+    {
+      "to": "quansheng-v3",
+      "what": "After a push to main, send quansheng_alert_ALL a firmware-updated repository dispatch (needs a token secret), so a new build is published that day, not the next Monday.",
+      "issue": null,
+      "since": "2026-10-31"
+    }
+  ]
+}
