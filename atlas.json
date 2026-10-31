@@ -25,8 +25,41 @@
     ],
     "blocked": [
       {
-        "what": "Set GitHub Pages to branch main, folder /docs (Settings, Pages); until then /flash/?radio=v3 links 404",
-        "on": "human"
+        "id": "pages-docs",
+        "what": "Set GitHub Pages to branch main, folder /docs (Settings → Pages); until then /flash/?radio=v3 links 404",
+        "on": "human",
+        "kind": "access",
+        "since": "2026-10-20",
+        "holds": [
+          "quansheng-v1's installer link to /flash/?radio=v3 (archived, so it cannot be changed)",
+          "quansheng-v3's README link to the V3 installer",
+          "open-alert's Quansheng V3 entry pointing at the installer",
+          "deleting the root index.html forward"
+        ],
+        "options": [
+          {
+            "what": "GitHub → cdomotor-g/quansheng_alert_ALL → Settings → Pages → Build and deployment: Source \"Deploy from a branch\", Branch main, Folder /docs → Save. A minute later https://cdomotor-g.github.io/quansheng_alert_ALL/flash/?radio=v3 should open the installer; then an agent deletes the root index.html and points atlas.json's /docs/flash/ link at /flash/.",
+            "by": "human",
+            "effort": "2 min",
+            "pros": "the addresses every repository already uses start working; nothing to keep in step",
+            "recommended": true
+          },
+          {
+            "what": "Without the owner: add forwarding pages at the root for each page people link to (flash/index.html, cable/index.html) that send on to docs/<page>/ keeping ?query and #hash, as the root index.html already does.",
+            "by": "agent",
+            "effort": "20 min",
+            "model": "Sonnet5/Low",
+            "pros": "live today, the archived installer's link included",
+            "cons": "the address bar shows /docs/; dead weight once Pages serves /docs"
+          },
+          {
+            "what": "Move the site from docs/ to the repository root, and point the weekly firmware refresh, tools/build_manifest.py, tools/check_manifest.py and the tests at the new paths, so the root publish serves /flash/ as it is.",
+            "by": "agent",
+            "effort": "an hour",
+            "model": "Sonnet5/Med",
+            "cons": "publishes the README, package.json and tests too; breaks again if Pages is later set to /docs"
+          }
+        ]
       }
     ]
   },
