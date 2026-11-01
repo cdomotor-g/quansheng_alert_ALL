@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ALERT Radio Setup</title>
+<!-- GitHub Pages serves this for any address it can't find. While Pages
+     publishes the repository root rather than docs/, an address like
+     /quansheng_alert_ALL/firmware/v3/… is really under docs/: send it there,
+     keeping any ?query and #section. An address already under docs/ that is
+     missing gets the plain message below rather than a loop. -->
+<script>
+(function () {
+  var base = '/quansheng_alert_ALL/';
+  var p = location.pathname;
+  if (p.indexOf(base) === 0 && p.indexOf(base + 'docs/') !== 0) {
+    location.replace(base + 'docs/' + p.slice(base.length) + location.search + location.hash);
+  }
+})();
+</script>
+</head>
+<body>
+<p>That page isn't here. <a href="/quansheng_alert_ALL/docs/">Go to the ALERT radio setup guide</a>.</p>
+</body>
+</html>
