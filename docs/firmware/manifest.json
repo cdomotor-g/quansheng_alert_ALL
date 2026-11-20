@@ -1,5 +1,5 @@
 {
-  "generated": "2026-11-20 13:18 UTC",
+  "generated": "2026-11-20 13:19 UTC",
   "builds": [
     {
       "id": "v3-alert",
@@ -9,14 +9,14 @@
       "badge": "Recommended",
       "badge_kind": "good",
       "file": "firmware/v3/quansheng-alert-v3.bin",
-      "size": 115708,
-      "sha256": "b7fb3a823022393cf9d3cb692299c0004dd8e663cd0b22f8acde821b1594d9b1",
+      "size": 115716,
+      "sha256": "002c8dcde767fbdffdc65c8a11083dca0ba861a1b6d6a539c19f8de9ba4e4967",
       "stations": 443,
       "built": "2026-11-20",
       "order": 10,
       "source": {
         "repo": "cdomotor-g/quansheng_alert_v3",
-        "commit": "e673028",
+        "commit": "acc2b14",
         "preset": "RescueOps",
         "options": "-DENABLE_ALERT=ON"
       }
