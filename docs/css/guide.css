@@ -52,6 +52,7 @@ figure img { display: block; max-width: 100%; height: auto; border-radius: 10px;
 figcaption { color: var(--muted); font-size: 0.86rem; margin-top: 6px; }
 .photo { background: #fff; border: 1px solid var(--line); }
 .grid2 { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); align-items: start; }
+.grid2.wide { grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); }   /* four screens: two by two */
 .grid3 { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); align-items: start; }
 
 /* the 128x64 LCD captures, scaled without blurring */

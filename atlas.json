@@ -193,13 +193,13 @@
       "from": "quansheng-v3",
       "provider": "screens",
       "into": "guide",
-      "what": "Screen captures of the V3 receiver, copied into docs/img/screens/ for the guide.",
+      "what": "Pictures of the V3 receiver's screens (drawn by quansheng_alert_v3's tools/alert/screens.py from the firmware's own screen code), copied into docs/img/screens/ for the guide.",
       "how": "vendored",
       "watch": [
         "tools/alert/screens/"
       ],
       "since": {
-        "date": "2026-10-20"
+        "date": "2026-11-20"
       },
       "on_change": "Copy the new or changed PNGs into docs/img/screens/ and check the guide's captions.",
       "drift_issue": true

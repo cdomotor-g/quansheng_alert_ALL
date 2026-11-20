@@ -85,14 +85,15 @@
      how strong the signal was. No computer is needed once it’s installed.</p>
   <div class="grid2">
     <figure>
-      <img class="lcd" src="img/screens/v2-list.png" width="512" height="256" alt="Radio screen listing three decoded stations with their readings">
-      <figcaption>Readings as they arrive: station name, then its number, sensor kind, value and
-         signal strength. Captured from a UV-K5 V3 receiving the South-East Queensland network.</figcaption>
+      <img class="lcd" src="img/screens/main-big.png" width="512" height="256" alt="Radio screen showing one reading: the station name in a dark bar, the value 18 in large digits with the word LEVEL, 34s AGO and NEWEST">
+      <figcaption>The newest reading, big: which station, the value and what kind it is, how
+         long ago it was heard, and <code>NEWEST</code> so you know it’s the latest.</figcaption>
     </figure>
     <figure>
-      <img class="lcd" src="img/screens/v2-1x4.png" width="512" height="256" alt="Radio screen waiting for transmissions, showing frequency, noise floor and counters">
-      <figcaption>Waiting for the first burst: frequency, noise floor, bursts heard and decoded,
-         the audio path it found, and the log.</figcaption>
+      <img class="lcd" src="img/screens/main-two.png" width="512" height="256" alt="Radio screen showing two readings, each with its station name, value, kind and age">
+      <figcaption>Or two at a time, or more: press <kbd>2</kbd> on the radio to change the
+         layout. These are drawn by the radio’s own screen code on a computer; the
+         readings are made up.</figcaption>
     </figure>
   </div>
   <div class="callout warn">
@@ -321,8 +322,8 @@ python tools/serialtool/cli.py flash --port COM5 quansheng-alert-v3.bin</pre></l
       <li>To open it by hand: <kbd>MENU</kbd>, scroll to the last item, <code>AlrtRx</code> (the
           list wraps, so going back one from the first item gets there), then <kbd>MENU</kbd>
           <kbd>MENU</kbd>.</li>
-      <li>Leave with <kbd>EXIT</kbd>. If you’ve scrolled down the list, the first EXIT jumps to
-          the top and the second leaves. Settings are saved as you leave.</li>
+      <li>Leave with <kbd>EXIT</kbd>. If you’ve gone back to older readings, the first EXIT
+          jumps to the newest and the second leaves. Settings are saved as you leave.</li>
     </ul>
     <div class="callout bad">
       <p><strong>Leave with EXIT, not PTT.</strong> Holding PTT also closes the app, but if you
@@ -334,18 +335,25 @@ python tools/serialtool/cli.py flash --port COM5 quansheng-alert-v3.bin</pre></l
     <p>It listens on whatever frequency the radio is tuned to. If that is outside 130–174&nbsp;MHz,
        it tunes itself to <strong>151.500&nbsp;MHz</strong>, the frequency of the South-East
        Queensland (MegaNet) networks it was tested on. To change it inside the app:
-       <kbd>MENU</kbd>, then <kbd>MENU</kbd> down to <code>FREQ MHz</code>, and <kbd>▲</kbd>/<kbd>▼</kbd>
-       in 12.5&nbsp;kHz steps (hold to go faster). <kbd>EXIT</kbd> saves.</p>
+       <kbd>MENU</kbd> opens the settings with <code>FREQ MHz</code> at the top; press
+       <kbd>MENU</kbd> again to change it, <kbd>▲</kbd>/<kbd>▼</kbd> in 12.5&nbsp;kHz steps
+       (hold to go faster), then <kbd>MENU</kbd> to keep it, or <kbd>EXIT</kbd> to put it back.</p>
 
     <h3>The first time</h3>
+    <figure>
+      <img class="lcd" src="img/screens/waiting.png" width="512" height="256" loading="lazy" alt="Radio screen before the first reading: 151.5000 MHz in large digits, LISTENING, the squelch level, the log, burst and decode counts, and the audio path">
+      <figcaption>Before the first reading: the frequency, what it’s doing, the squelch and
+         whether readings are being kept, bursts heard and decoded, and the audio path it found.</figcaption>
+    </figure>
     <ol>
       <li><code>SETTLING 10…1</code>: ten seconds while it measures the background noise.</li>
       <li><code>CENSUS</code>: three or four seconds while it plays two short tones through the
           radio’s own audio to find which input carries the receiver’s audio. Nothing is
           transmitted. You may hear the tones. This happens until the first decode, then it
           remembers the answer.</li>
-      <li><code>WAITING</code>: listening. The <code>AUD</code> line shows the audio path it found:
-          <code>CHK</code> until the first decode, then <code>OK</code> (e.g. <code>AUD PA4B OK</code>).</li>
+      <li><code>LISTENING</code>: waiting for a burst. The <code>AUD</code> line shows the audio
+          path it found: <code>CHK</code> until the first decode, then <code>OK</code> (e.g.
+          <code>AUD PA4B OK</code>).</li>
     </ol>
     <p>Then leave it. Stations transmit when something changes, and report in regularly. On
        test, the South-East Queensland network sent dozens of bursts in ten minutes. A quieter
@@ -354,60 +362,96 @@ python tools/serialtool/cli.py flash --port COM5 quansheng-alert-v3.bin</pre></l
     <h3>What’s on the screen</h3>
     <ul>
       <li><strong>Top line:</strong> <code>ALERT</code>, then <code>RX</code> while a signal is
-          coming in (or <code>+N</code> new readings while you’re scrolled away), the noise floor
-          (<code>NF-74</code>), <code>L</code> when logging, and the battery.</li>
-      <li><strong>The list</strong> (newest at the top, three at a time): the station name, or
-          <code>ID 4142 ?</code> if it isn’t in the radio’s table, with how long ago it was heard.
-          Under it: station number, kind (<code>RAIN</code>, <code>LVL</code>, <code>BATT</code>,
-          <code>REP</code> repeater, <code>OTH</code>, <code>CHK</code>), the value, and the signal
-          strength in dBm.</li>
+          coming in (or <code>+N</code> new readings while you’re looking at older ones), the
+          noise floor (<code>NF-74</code>), <code>L</code> when logging, and the battery.</li>
+      <li><strong>The reading you’re looking at</strong> has its station name in a dark bar. New
+          readings arrive at the top. <kbd>▼</kbd> goes back to older ones and <kbd>▲</kbd> forward
+          again; in the big layout the bottom line says <code>NEWEST</code>, or how many newer
+          readings there are (<code>2 NEWER</code>). After 30 seconds without a key it goes back to
+          the newest by itself.</li>
+      <li><strong>Station names</strong> come from the radio’s table; a station that isn’t in it
+          shows as <code>ID 4142 ?</code>. A name too long for its space scrolls.</li>
       <li><strong>Values</strong> are what the station sends. Rain is the gauge’s running count of
           bucket tips, so the rise between two readings is the rain that fell in between. (MegaNet
           counts 0.2&nbsp;mm a tip unless a station records otherwise.) River level is the raw sensor
           number, scaled differently at each site. Battery is shown in volts. <code>FULL</code> means
           2047, the sensor’s maximum: over-range or a faulty sensor.</li>
-      <li><strong>Detail view</strong> (<kbd>1</kbd>): the full name, kind, value and raw value, signal
-          and noise floor, the fade margin, the data format, and how long ago it was heard.</li>
+      <li><strong>Detail view</strong> (<kbd>1</kbd>): the full name, station number and kind,
+          value and raw value, signal and noise floor, the fade margin, the data format, and how
+          long ago it was heard.</li>
+      <li><strong>Notes:</strong> a key that changes something says so for a moment along the
+          bottom, e.g. <code>SPEAKER: SQL</code> or <code>LAYOUT: TWO</code>.</li>
     </ul>
+
+    <h3>Layouts</h3>
+    <p>Four ways to fill the screen. <kbd>2</kbd> steps through them, or set
+       <code>LAYOUT</code> in the settings. The radio remembers the one you leave it on.</p>
+    <div class="grid2 wide">
+      <figure>
+        <img class="lcd" src="img/screens/main-big.png" width="512" height="256" loading="lazy" alt="BIG layout: one reading with its value in large digits">
+        <figcaption><code>BIG</code> (the default): one reading, its value in large digits.</figcaption>
+      </figure>
+      <figure>
+        <img class="lcd" src="img/screens/main-two.png" width="512" height="256" loading="lazy" alt="TWO layout: two readings, each with name, value, kind and age">
+        <figcaption><code>TWO</code>: two readings, a line between them.</figcaption>
+      </figure>
+      <figure>
+        <img class="lcd" src="img/screens/main-classic.png" width="512" height="256" loading="lazy" alt="CLASSIC layout: three readings with station number, kind, value and signal strength">
+        <figcaption><code>CLASSIC</code>: three readings with station number, kind, value and
+           signal strength in dBm, as the receiver first showed them.</figcaption>
+      </figure>
+      <figure>
+        <img class="lcd" src="img/screens/main-list.png" width="512" height="256" loading="lazy" alt="LIST layout: six readings, one line each with name, value and age">
+        <figcaption><code>LIST</code>: six readings, one line each: name, value, age.</figcaption>
+      </figure>
+    </div>
 
     <h3>Keys</h3>
     <div class="scroll-x">
     <table class="t">
-      <thead><tr><th>Key</th><th>In the list / detail view</th><th>In settings</th></tr></thead>
+      <thead><tr><th>Key</th><th>With the readings</th><th>In settings</th></tr></thead>
       <tbody>
-        <tr><th><kbd>▲</kbd> <kbd>▼</kbd></th><td>scroll one reading</td><td>change the value</td></tr>
+        <tr><th><kbd>▲</kbd> <kbd>▼</kbd></th><td>newer / older reading</td><td>move between rows; while changing one, change its value</td></tr>
         <tr><th><kbd>1</kbd></th><td>open / close the detail view</td><td>—</td></tr>
-        <tr><th><kbd>MENU</kbd></th><td>open settings</td><td>next row</td></tr>
-        <tr><th><kbd>*</kbd></th><td>voice on / off (no effect in this build: see below)</td><td>previous row</td></tr>
+        <tr><th><kbd>2</kbd></th><td>next layout: <code>BIG</code> → <code>TWO</code> → <code>CLASSIC</code> → <code>LIST</code></td><td>—</td></tr>
+        <tr><th><kbd>MENU</kbd></th><td>open settings</td><td>change this row; press again to keep the change</td></tr>
         <tr><th><kbd>F</kbd></th><td>speaker: <code>OFF</code> → <code>SQL</code> → <code>ON</code></td><td>—</td></tr>
-        <tr><th><kbd>EXIT</kbd></th><td>back; from the top of the list, leave the app</td><td>save and go back</td></tr>
+        <tr><th><kbd>*</kbd></th><td>voice on / off (this build has no voice: it says <code>NO VOICE</code>)</td><td>—</td></tr>
+        <tr><th><kbd>EXIT</kbd></th><td>back to the newest; from the newest, leave the app</td><td>while changing a row, put it back; otherwise save and go back</td></tr>
       </tbody>
     </table>
     </div>
-    <p class="hint">After 30 seconds without a key press the view goes back to the newest
-       reading. This radio has no <kbd>#</kbd> key. The bottom-right key is <kbd>F</kbd>.</p>
+    <p class="hint">This radio has no <kbd>#</kbd> key. The bottom-right key is <kbd>F</kbd>.
+       Settings work like the radio’s own menu: pick a row, <kbd>MENU</kbd>, change it, <kbd>MENU</kbd>.</p>
 
     <h3>Settings (<kbd>MENU</kbd> inside the app)</h3>
+    <figure>
+      <img class="lcd" src="img/screens/settings-edit.png" width="512" height="256" loading="lazy" alt="Settings screen while the frequency is being changed: its value highlighted and the top line reading MENU=OK EXIT=UNDO">
+      <figcaption>Changing the frequency: its value is highlighted, and the top line says how to
+         finish. A change takes effect as you make it, so you can hear the squelch move.</figcaption>
+    </figure>
     <div class="scroll-x">
     <table class="t">
       <thead><tr><th>Row</th><th>What it does</th><th>Default</th></tr></thead>
       <tbody>
-        <tr><th>VOICE</th><td>Read readings aloud. The published build has the voice prompts compiled out to save space, so this does nothing yet.</td><td>OFF</td></tr>
+        <tr><th>FREQ MHz</th><td>Receive frequency, 130–174&nbsp;MHz in 12.5&nbsp;kHz steps</td><td>the radio’s</td></tr>
+        <tr><th>SQL LEVEL</th><td>The radio’s squelch, in tenths (0.0–9.0). It changes the radio’s main squelch too</td><td>the radio’s</td></tr>
         <tr><th>SPEAKER</th><td><code>OFF</code> silent; <code>SQL</code> you hear each burst as it arrives; <code>ON</code> you hear the channel all the time</td><td>SQL</td></tr>
-        <tr><th>CSV OUT</th><td>Send each reading to a connected computer (see <a href="#computer">Logging</a>)</td><td>ON</td></tr>
-        <tr><th>LOG</th><td>Keep every reading in the radio’s memory, about 6,000 of them, oldest dropped first</td><td>ON</td></tr>
+        <tr><th>LAYOUT</th><td>How the readings fill the screen: <code>BIG</code>, <code>TWO</code>, <code>CLASSIC</code> or <code>LIST</code> (see Layouts above)</td><td>BIG</td></tr>
         <tr><th>UNKNOWN</th><td>Show or hide stations that aren’t in the radio’s table (they’re still logged)</td><td>SHOW</td></tr>
+        <tr><th>LOG</th><td>Keep every reading in the radio’s memory, about 6,000 of them, oldest dropped first</td><td>ON</td></tr>
+        <tr><th>CSV OUT</th><td>Send each reading to a connected computer (see <a href="#computer">Logging</a>)</td><td>ON</td></tr>
         <tr><th>CONFIRM</th><td>Only accept a reading heard twice in the same burst. Fewer false readings, fewer readings overall</td><td>OFF</td></tr>
         <tr><th>SQ GATE</th><td>Only count bursts at least 15&nbsp;dB above the noise, so noise isn’t mistaken for data</td><td>ON</td></tr>
         <tr><th>SNR REQ</th><td>How much signal over noise counts as decodable; only affects the fade-margin figure</td><td>12</td></tr>
+        <tr><th>CENSUS</th><td>The audio path it chose (e.g. <code>PA4B</code>). <kbd>MENU</kbd> then <kbd>▲</kbd> runs the census again</td><td>—</td></tr>
         <tr><th>DEBUG</th><td>Extra diagnostic lines on USB</td><td>OFF</td></tr>
-        <tr><th>MDM MODE</th><td>Shows <code>ADC</code>, the software demodulator. Not adjustable</td><td>—</td></tr>
-        <tr><th>CENSUS</th><td>The audio path it chose (e.g. <code>PA4B</code>). <kbd>▲</kbd> runs the census again</td><td>—</td></tr>
-        <tr><th>FREQ MHz</th><td>Receive frequency, 130–174&nbsp;MHz in 12.5&nbsp;kHz steps</td><td>the radio’s</td></tr>
-        <tr><th>SQL LEVEL</th><td>The radio’s squelch, in tenths (0.0–9.0). It changes the radio’s main squelch too</td><td>the radio’s</td></tr>
       </tbody>
     </table>
     </div>
+    <p class="hint">Two rows are only on the computer link: <code>VOICE</code>, which does nothing
+       in the published build (it has no voice prompts, to save space), and <code>MDM MODE</code>,
+       which only ever reads <code>ADC</code>, the software demodulator.</p>
   </div>
 
   <div class="tabpanel" id="use-v1" role="tabpanel" aria-labelledby="tab-v1" hidden>
@@ -541,7 +585,7 @@ python tools/alert/alertterm.py console                    <span class="c"># typ
           better antenna. The detail view’s signal and <code>FADE</code> figures show how much
           margin you have.</li>
       <li>If the <code>AUD</code> line says <code>OFF</code> (nothing found), turn the volume up
-          a little and re-run the census: settings → <code>CENSUS</code> → <kbd>▲</kbd>.</li>
+          a little and re-run the census: settings → <code>CENSUS</code> → <kbd>MENU</kbd> → <kbd>▲</kbd> → <kbd>MENU</kbd>.</li>
       <li><code>SQ GATE</code> rejects anything less than 15&nbsp;dB above the noise. That’s the
           right setting, but it means a very weak station will be ignored rather than misread.</li>
     </ul>
