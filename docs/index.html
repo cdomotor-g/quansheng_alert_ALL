@@ -334,10 +334,24 @@ python tools/serialtool/cli.py flash --port COM5 quansheng-alert-v3.bin</pre></l
     <h3>Frequency</h3>
     <p>It listens on whatever frequency the radio is tuned to. If that is outside 130–174&nbsp;MHz,
        it tunes itself to <strong>151.500&nbsp;MHz</strong>, the frequency of the South-East
-       Queensland (MegaNet) networks it was tested on. To change it inside the app:
-       <kbd>MENU</kbd> opens the settings with <code>FREQ MHz</code> at the top; press
-       <kbd>MENU</kbd> again to change it, <kbd>▲</kbd>/<kbd>▼</kbd> in 12.5&nbsp;kHz steps
-       (hold to go faster), then <kbd>MENU</kbd> to keep it, or <kbd>EXIT</kbd> to put it back.</p>
+       Queensland (MegaNet) networks it was tested on. To change it inside the app,
+       <kbd>MENU</kbd> opens the settings with <code>FREQ MHz</code> at the top, then either:</p>
+    <ul>
+      <li><strong>type it</strong> with the number keys, as on the radio’s main screen:
+          <kbd>1</kbd><kbd>5</kbd><kbd>1</kbd><kbd>5</kbd><kbd>1</kbd><kbd>2</kbd><kbd>5</kbd> is
+          151.5125&nbsp;MHz. The point goes in by itself, and the radio retunes as the last
+          digit goes in. <kbd>MENU</kbd> after fewer digits fills the rest with zeros
+          (<kbd>1</kbd><kbd>6</kbd><kbd>2</kbd> <kbd>MENU</kbd> is 162.0000); <kbd>EXIT</kbd>
+          takes the last digit back. Anything outside 130–174&nbsp;MHz says
+          <code>OUT OF RANGE</code>. The squelch can be typed the same way.</li>
+      <li>or <strong>step it</strong>: <kbd>MENU</kbd>, then <kbd>▲</kbd>/<kbd>▼</kbd> in
+          12.5&nbsp;kHz steps (hold to go faster).</li>
+    </ul>
+    <p>Then <kbd>MENU</kbd> to keep it, or <kbd>EXIT</kbd> to put it back.</p>
+    <figure>
+      <img class="lcd" src="img/screens/settings-typing.png" width="512" height="256" loading="lazy" alt="Settings screen with a frequency half typed: 151.5 followed by three blank places, highlighted">
+      <figcaption>Half way through typing 151.5125: each digit fills the next place.</figcaption>
+    </figure>
 
     <h3>The first time</h3>
     <figure>
@@ -415,9 +429,10 @@ python tools/serialtool/cli.py flash --port COM5 quansheng-alert-v3.bin</pre></l
         <tr><th><kbd>1</kbd></th><td>open / close the detail view</td><td>—</td></tr>
         <tr><th><kbd>2</kbd></th><td>next layout: <code>BIG</code> → <code>TWO</code> → <code>CLASSIC</code> → <code>LIST</code></td><td>—</td></tr>
         <tr><th><kbd>MENU</kbd></th><td>open settings</td><td>change this row; press again to keep the change</td></tr>
+        <tr><th><kbd>0</kbd>–<kbd>9</kbd></th><td>—</td><td>type the frequency or the squelch</td></tr>
         <tr><th><kbd>F</kbd></th><td>speaker: <code>OFF</code> → <code>SQL</code> → <code>ON</code></td><td>—</td></tr>
         <tr><th><kbd>*</kbd></th><td>voice on / off (this build has no voice: it says <code>NO VOICE</code>)</td><td>—</td></tr>
-        <tr><th><kbd>EXIT</kbd></th><td>back to the newest; from the newest, leave the app</td><td>while changing a row, put it back; otherwise save and go back</td></tr>
+        <tr><th><kbd>EXIT</kbd></th><td>back to the newest; from the newest, leave the app</td><td>while typing, take a digit back; while changing a row, put it back; otherwise save and go back</td></tr>
       </tbody>
     </table>
     </div>
@@ -434,7 +449,7 @@ python tools/serialtool/cli.py flash --port COM5 quansheng-alert-v3.bin</pre></l
     <table class="t">
       <thead><tr><th>Row</th><th>What it does</th><th>Default</th></tr></thead>
       <tbody>
-        <tr><th>FREQ MHz</th><td>Receive frequency, 130–174&nbsp;MHz in 12.5&nbsp;kHz steps</td><td>the radio’s</td></tr>
+        <tr><th>FREQ MHz</th><td>Receive frequency, 130–174&nbsp;MHz in 12.5&nbsp;kHz steps: step it, or type it (see Frequency above)</td><td>the radio’s</td></tr>
         <tr><th>SQL LEVEL</th><td>The radio’s squelch, in tenths (0.0–9.0). It changes the radio’s main squelch too</td><td>the radio’s</td></tr>
         <tr><th>SPEAKER</th><td><code>OFF</code> silent; <code>SQL</code> you hear each burst as it arrives; <code>ON</code> you hear the channel all the time</td><td>SQL</td></tr>
         <tr><th>LAYOUT</th><td>How the readings fill the screen: <code>BIG</code>, <code>TWO</code>, <code>CLASSIC</code> or <code>LIST</code> (see Layouts above)</td><td>BIG</td></tr>
