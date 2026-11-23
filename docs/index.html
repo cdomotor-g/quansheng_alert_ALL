@@ -577,6 +577,16 @@ python tools/alert/alertterm.py console                    <span class="c"># typ
   </details>
 
   <details class="faq">
+    <summary>“Flashing stopped at page …” part-way through</summary>
+    <p>The radio stopped answering in the middle of the install. The installer now notices when the radio
+       falls back to waiting for a handshake, introduces itself again and carries on, and the log under the
+       installer says when it did. If it still stops, switch the radio off, hold PTT, switch it on and press
+       Install again. Use a short USB-C cable straight into the computer (no hub), and charge the battery
+       first. If it stops at the same page every time, press <strong>Copy log</strong> and send the log
+       to whoever maintains this site.</p>
+  </details>
+
+  <details class="faq">
     <summary>“This radio is a UV-K5 V3 / UV-K1, and the firmware you picked is for a UV-K5” (or the other way round)</summary>
     <p>The installer read the radio’s bootloader and stopped before writing anything. Use the
        <em>Switch to firmware for…</em> button it shows, or go back to step 1 and pick the other

@@ -79,6 +79,16 @@ function installFakeRadio() {
 		port: null,
 		portsMade: 0,
 		autoReboot: true,       // v3: restart into the app after the last page
+		programming: false,     // v3: handshaken, so it has stopped beaconing (the real one does)
+		hsCount: 0,             // v3: handshakes heard since it last (re)started
+		pageSends: [],          // v3: the index of every page frame it received, repeats included
+		dropAt: null,           // v3 fault: at this page it goes quiet, then forgets the handshake
+		dropTimes: 0,           //     ... this many times
+		dropped: 0,
+		dropSilenceMs: 500,     //     ... after this long saying nothing
+		slowAt: null,           // v3 fault: this page is acknowledged only after slowMs, unprompted
+		slowMs: 5000,
+		slowDone: false,
 	};
 	window.__radio = radio;
 	for (let i = 0; i < radio.eeprom.length; i++) radio.eeprom[i] = (i * 7 + 3) & 0xff;
@@ -121,7 +131,8 @@ function installFakeRadio() {
 	const tick = () => {
 		clearInterval(ticker);
 		ticker = setInterval(() => {
-			if (radio.mode === 'boot') send(BEACONS[radio.beaconKind], 'boot');
+			if (radio.mode === 'boot' && !(radio.beaconKind === 'v3' && radio.programming))
+				send(BEACONS[radio.beaconKind], 'boot');
 			if (radio.mode === 'noise' && radio.port && radio.port.controller)
 				radio.port.controller.enqueue(Uint8Array.from({ length: 20 }, () => Math.random() * 256));
 		}, 200);
@@ -147,19 +158,37 @@ function installFakeRadio() {
 				return;
 			}
 			// the V3 bootloader, as serialtool/_prog.py describes it
+			const ack = (err) =>
+				send([0x1a, 0x05, 0x08, 0x00, p[4], p[5], p[6], p[7], p[8], p[9], err, 0x00], 'boot');
 			if (cmd === 0x30) {
 				radio.handshakes.push(new TextDecoder().decode(p.slice(4, 4 + le16(p, 2))));
+				if (++radio.hsCount >= 3) radio.programming = true;   // the beacons stop
 			} else if (cmd === 0x19) {
 				const page = le16(p, 8), count = le16(p, 10);
-				let err = 0;
-				if (!radio.handshakes.length) { radio.earlyPages++; err = 1; }   // rejected until the handshake
-				else {
+				radio.pageSends.push(page);
+				if (!radio.programming) {
+					if (!radio.handshakes.length) { radio.earlyPages++; ack(1); }   // rejected until the handshake
+					return;       // once it has forgotten the handshake it ignores pages without a word
+				}
+				if (radio.dropAt === page && radio.dropped < radio.dropTimes) {
+					// what a V3 did on hardware: silence, then the beacon again
+					radio.dropped++;
+					setTimeout(() => { radio.programming = false; radio.hsCount = 0; }, radio.dropSilenceMs);
+					return;
+				}
+				const store = () => {
 					radio.flashed.set(page, p.slice(16, 16 + 0x100));
 					radio.pageCounts.add(count);
+					if (page === count - 1 && radio.autoReboot && radio.usbC)
+						setTimeout(() => window.__power('normal', 'F4HWN v5.9.1'), 300);
+				};
+				if (radio.slowAt === page && !radio.slowDone) {
+					radio.slowDone = true;       // busy: answers late, and only once
+					setTimeout(() => { store(); ack(0); }, radio.slowMs);
+					return;
 				}
-				send([0x1a, 0x05, 0x08, 0x00, p[4], p[5], p[6], p[7], p[8], p[9], err, 0x00], 'boot');
-				if (!err && page === count - 1 && radio.autoReboot && radio.usbC)
-					setTimeout(() => window.__power('normal', 'F4HWN v5.9.1'), 300);
+				store();
+				ack(0);
 			}
 			return;
 		}
@@ -234,6 +263,8 @@ function installFakeRadio() {
 	window.__power = (mode, version) => {
 		if (version) radio.version = version;
 		radio.mode = mode;
+		radio.programming = false;
+		radio.hsCount = 0;
 		if (radio.usbC) {
 			const old = radio.port;
 			radio.port = null;
@@ -401,6 +432,72 @@ try {
 		check('a V3 restore writes the calibration and nothing else',
 		      writes.length === 32 && writes.every((a, i) => a === 0xb000 + i * 16), JSON.stringify(writes.slice(0, 4)) + ` … ${writes.length}`);
 
+		check('no JavaScript errors on the page', errors.length === 0, errors.join('\n        '));
+	}
+
+	// ============================ a V3 bootloader that drops out part-way through
+	// A real UV-K5 V3 over USB-C stopped acknowledging at the same page every
+	// time: silent for a few seconds, then broadcasting its "I am waiting"
+	// beacon again with the port still open, ignoring pages until it was
+	// introduced a second time. The installer used to keep pushing pages at it.
+	async function flashV3With(fault) {
+		const { page, errors } = await newPage('?radio=v3');
+		await page.locator('.fw').first().click();
+		await waitText(page, 'fw-chosen', /Ready to install/);
+		await page.evaluate(f => window.__setup({ usbC: true, family: 'v3', beaconKind: 'v3', mode: 'boot', ...f }), fault);
+		await page.locator('#btn-connect').click();
+		await waitText(page, 'connect-status', /bootloader mode/);
+		await page.locator('#skip-backup').check();
+		await page.locator('#btn-flash').click();
+		return { page, errors };
+	}
+	const radioState = (page) => page.evaluate(() => ({
+		hs: window.__radio.handshakes.length,
+		sends: window.__radio.pageSends,
+		pages: Array.from(window.__radio.flashed.keys()).sort((a, b) => a - b),
+		log: document.getElementById('log').textContent,
+	}));
+	const v3pages = Math.ceil(v3raw.length / 0x100);
+
+	console.log('installer: a V3 bootloader that forgets the handshake at page 31');
+	{
+		const { page, errors } = await flashV3With({ dropAt: 30, dropTimes: 1 });
+		await waitText(page, 'flash-status', /Installed|Flashing stopped/, 90000);
+		const st = await radioState(page);
+		check('it installs anyway', /Installed/.test(await text(page, 'flash-status')), await text(page, 'flash-status'));
+		check('the log says the radio went back to its beacon and was shaken hands with again',
+		      /went back to broadcasting its beacon/.test(st.log) && /Shaking hands again \(1\/3\)/.test(st.log));
+		check('it shook hands a second time (3 + 3 handshakes)', st.hs === 6, `${st.hs} handshakes`);
+		check('page 31 was sent twice, not five times', st.sends.filter(p => p === 30).length === 2,
+		      `${st.sends.filter(p => p === 30).length} sends`);
+		check('every page ended up written', st.pages.length === v3pages && st.pages.every((p, i) => p === i),
+		      `${st.pages.length} of ${v3pages}`);
+		check('no JavaScript errors on the page', errors.length === 0, errors.join('\n        '));
+	}
+
+	console.log('installer: a V3 bootloader that keeps forgetting the handshake');
+	{
+		const { page, errors } = await flashV3With({ dropAt: 30, dropTimes: 99 });
+		await waitText(page, 'flash-status', /Installed|Flashing stopped/, 90000);
+		const msg = await text(page, 'flash-status');
+		check('it gives up, naming the page and the cause in plain words',
+		      /Flashing stopped at page 31 of \d+: the radio keeps going back to waiting for a handshake/.test(msg), msg);
+		check('it tells the user to restart the radio in bootloader mode', /switch it off and on holding PTT/.test(msg), msg);
+		const st = await radioState(page);
+		check('it did not hammer the radio: three more handshakes at most', st.hs <= 12, `${st.hs} handshakes`);
+		check('the install button comes back for another try', await page.locator('#btn-flash').isEnabled());
+		check('no JavaScript errors on the page', errors.length === 0, errors.join('\n        '));
+	}
+
+	console.log('installer: a V3 bootloader that is merely slow on one page');
+	{
+		const { page, errors } = await flashV3With({ slowAt: 30, slowMs: 5000 });
+		await waitText(page, 'flash-status', /Installed|Flashing stopped/, 90000);
+		const st = await radioState(page);
+		check('it installs', /Installed/.test(await text(page, 'flash-status')), await text(page, 'flash-status'));
+		check('the slow page is not sent again after 3 s', st.sends.filter(p => p === 30).length === 1,
+		      `${st.sends.filter(p => p === 30).length} sends`);
+		check('no re-handshake was needed', st.hs === 3 && !/Shaking hands again/.test(st.log), `${st.hs} handshakes`);
 		check('no JavaScript errors on the page', errors.length === 0, errors.join('\n        '));
 	}
 

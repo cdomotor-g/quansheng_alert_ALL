@@ -280,9 +280,11 @@ class K5Radio {
 			const w = { want, resolve, reject, timer: null };
 			w.timer = setTimeout(() => {
 				this.waiters = this.waiters.filter(x => x !== w);
-				reject(new Error(want === null
+				const err = new Error(want === null
 					? 'The radio did not answer.'
-					: `The radio did not send the expected 0x${want.toString(16)} reply in time.`));
+					: `The radio did not send the expected 0x${want.toString(16)} reply in time.`);
+				err.timeout = true;      // as opposed to the cable being pulled
+				reject(err);
 			}, timeoutMs);
 			this.waiters.push(w);
 		});
@@ -597,6 +599,12 @@ class K5Radio {
 	// The V3 / UV-K1 bootloader (7.x), after serialtool/_prog.py: answer three
 	// beacons with the handshake, then send numbered 256-byte pages, each
 	// acknowledged with its index and an error code.
+	//
+	// Hardware logs (a UV-K5 V3 over USB-C, the same page every try) showed the
+	// bootloader falling silent and then going back to broadcasting its beacon
+	// part-way through, with the port still open. In that state it ignores every
+	// page until it hears the handshake again, so resending the page cannot help:
+	// the installer has to notice the beacon, shake hands again and carry on.
 	async _flashV3(image, onProgress) {
 		const raw   = image.raw;
 		const pages = Math.ceil(raw.length / 0x100);
@@ -605,51 +613,140 @@ class K5Radio {
 		const blVersion = K5Radio.bootloaderVersion(this.lastBeacon) || '7.00';
 		const hello = K5.cmd.handshakeV3(blVersion);
 		this.drain();
+		const shaken = await this._handshakeV3(hello);
+		this.log(`Handshake sent (${JSON.stringify(blVersion.slice(0, 4))}, ${shaken}×). Writing ${pages} pages.`);
+
+		// serialtool never resends a page that has merely gone unanswered; it waits
+		// up to 10 s. Resending after 3 s, as this did, only piled a second copy of
+		// the page on top of a bootloader that was busy.
+		const WAIT_MS = 8000, TRIES = 4, MAX_DROPS = 3;
+		const token = Math.floor(Date.now() / 10) >>> 0;   // any value, constant for the session
+		let drops = 0, restarts = 0, afterDrop = false;
+
+		for (let page = 0; page < pages;) {
+			const data  = raw.subarray(page * 0x100, Math.min((page + 1) * 0x100, raw.length));
+			const frame = K5.cmd.flashPageV3(page, pages, data, token);
+			let outcome = null;
+
+			for (let attempt = 1; attempt <= TRIES; attempt++) {
+				// anything queued is stale: a beacon sent before the radio had heard
+				// the handshake, or the answer to a page we have already moved past
+				this.drain();
+				await this.send(frame);
+				outcome = await this._pageReplyV3(page, WAIT_MS);
+				if (outcome.ok || outcome.dropped) break;
+				if (outcome.refused && afterDrop) break;      // see below
+				if (attempt < TRIES)
+					this.log(`Page ${page + 1}/${pages} failed (${K5Radio._describeV3(outcome, WAIT_MS)}) - retrying.`);
+			}
+
+			if (outcome.ok) {
+				afterDrop = false;
+				page++;
+				onProgress(page / pages);
+				continue;
+			}
+
+			if (outcome.dropped) {
+				if (++drops > MAX_DROPS)
+					throw new Error(`Flashing stopped at page ${page + 1} of ${pages}: the radio keeps going back to ` +
+					                'waiting for a handshake. The radio is still in bootloader mode - switch it off and on ' +
+					                'holding PTT, then try again.');
+				this.log(`Page ${page + 1}/${pages}: the radio went back to broadcasting its beacon, so it has forgotten ` +
+				         `the handshake (${K5Radio._describeV3(outcome, WAIT_MS)}). Shaking hands again (${drops}/${MAX_DROPS}).`);
+				this.drain();
+				await this._handshakeV3(hello);
+				afterDrop = true;
+				continue;                                      // the same page again
+			}
+
+			// A radio that has just been re-introduced and still refuses this page may
+			// only take them in order. Start over once from the first page.
+			if (outcome.refused && afterDrop && restarts < 1) {
+				restarts++;
+				this.log(`Page ${page + 1}/${pages}: refused after a new handshake (${K5Radio._describeV3(outcome, WAIT_MS)}) - starting again from page 1.`);
+				page = 0;
+				afterDrop = false;
+				onProgress(0);
+				continue;
+			}
+
+			throw new Error(`Flashing stopped at page ${page + 1} of ${pages}: ${K5Radio._describeV3(outcome, WAIT_MS)}. ` +
+			                'The radio is still in bootloader mode - switch it off and on holding PTT, then try again.');
+		}
+	}
+
+	// Answer the three beacons that start a V3 flash with the handshake. A radio
+	// that has heard enough stops beaconing, which ends it early; a radio that
+	// never beacons at all is an error. Returns how many handshakes were sent.
+	async _handshakeV3(hello) {
 		let shaken = 0;
 		for (let i = 0; i < 3; i++) {
 			try {
 				await this.expect(0x18, 2500);
-			} catch {
-				if (shaken) break;        // it has heard us and stopped beaconing: carry on
+			} catch (err) {
+				if (!err.timeout) throw err;               // the cable went, not a quiet radio
+				if (shaken) break;                         // it has heard us and stopped beaconing: carry on
 				throw new Error('The radio stopped broadcasting before the handshake. Switch it off, hold PTT, ' +
 				                'switch it on, and try again.');
 			}
 			await this.send(hello);
 			shaken++;
 		}
-		this.log(`Handshake sent (${JSON.stringify(blVersion.slice(0, 4))}, ${shaken}×). Writing ${pages} pages.`);
+		return shaken;
+	}
 
-		const token = Math.floor(Date.now() / 10) >>> 0;   // any value, constant for the session
-		for (let page = 0; page < pages; page++) {
-			const data = raw.subarray(page * 0x100, Math.min((page + 1) * 0x100, raw.length));
-			let done = false, lastErr = null;
-
-			for (let attempt = 0; attempt < 5 && !done; attempt++) {
-				try {
-					await this.send(K5.cmd.flashPageV3(page, pages, data, token));
-					const deadline = Date.now() + 3000;
-					for (;;) {
-						const reply = await this.expect(null, Math.max(200, deadline - Date.now()));
-						if (reply[0] === 0x1a && reply[1] === 0x05 && reply.length >= 12) {
-							const r = K5.parseFlashReplyV3(reply);
-							if (r.page !== page) continue;          // a late answer to an earlier try
-							if (r.err) throw new Error(`the radio refused page ${page + 1} (error ${r.err})`);
-							done = true;
-							break;
-						}
-						if (Date.now() > deadline) throw new Error('No acknowledgement for this page.');
-					}
-				} catch (err) {
-					lastErr = err;
-					if (attempt < 4) this.log(`Page ${page + 1}/${pages} failed (${err.message}) - retrying.`);
-				}
+	// Wait for the acknowledgement of one page. Resolves to
+	//   { ok: true }
+	//   { refused: code }          the radio answered with an error code
+	//   { dropped: true }          it is broadcasting its beacon again, so it has
+	//                              forgotten the handshake and will ignore pages
+	//   { silent: true }           nothing settled it within `waitMs`
+	// each with `seen`: what else arrived meanwhile, for the log.
+	async _pageReplyV3(page, waitMs) {
+		const seen = { beacons: 0, acks: [], other: 0 };
+		const deadline = Date.now() + waitMs;
+		for (;;) {
+			const left = deadline - Date.now();
+			if (left <= 0) return { silent: true, seen };
+			let reply;
+			try {
+				reply = await this.expect(null, left);
+			} catch (err) {
+				if (err.timeout) return { silent: true, seen };
+				throw err;
 			}
-			if (!done)
-				throw new Error(`Flashing stopped at page ${page + 1} of ${pages}: ${lastErr ? lastErr.message : 'no acknowledgement'}. ` +
-				                'The radio is still in bootloader mode - switch it off and on holding PTT, then try again.');
-
-			onProgress((page + 1) / pages);
+			if (reply[0] === 0x1a && reply[1] === 0x05 && reply.length >= 12) {
+				const r = K5.parseFlashReplyV3(reply);
+				if (r.page !== page) {                     // a late answer to an earlier page
+					if (!seen.acks.includes(r.page + 1)) seen.acks.push(r.page + 1);
+					continue;
+				}
+				if (r.err) return { refused: r.err, seen };
+				return { ok: true, seen };
+			}
+			if (K5Radio.isBootloaderBroadcast(reply)) {
+				// One beacon can be a straggler sent just before the radio heard the
+				// handshake. Three in a row (the bootloader sends about five a second)
+				// and no answer is a radio that is waiting to be introduced again.
+				if (++seen.beacons >= 3) return { dropped: true, seen };
+				continue;
+			}
+			seen.other++;
 		}
+	}
+
+	// Plain words for a failed page, including whatever else the radio sent.
+	static _describeV3(outcome, waitMs) {
+		const s = outcome.seen || { beacons: 0, acks: [], other: 0 };
+		const heard = [];
+		if (s.beacons) heard.push(`its waiting beacon x${s.beacons}`);
+		if (s.acks.length) heard.push(`answers for page ${s.acks.join(', ')}`);
+		if (s.other) heard.push(`${s.other} other packet${s.other === 1 ? '' : 's'}`);
+		const tail = heard.length ? `; it sent ${heard.join(', ')}` : '';
+		if (outcome.refused) return `the radio refused the page (error ${outcome.refused})${tail}`;
+		if (outcome.dropped) return `no answer, and the radio is waiting for a handshake again${tail}`;
+		return `no answer for ${Math.round(waitMs / 1000)} s${tail}`;
 	}
 }
 
