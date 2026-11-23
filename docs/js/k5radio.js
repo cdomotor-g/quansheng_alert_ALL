@@ -632,7 +632,12 @@ class K5Radio {
 				// anything queued is stale: a beacon sent before the radio had heard
 				// the handshake, or the answer to a page we have already moved past
 				this.drain();
-				await this.send(frame);
+				await this._sendPacedV3(frame);
+				// the radio goes on beaconing for a moment after the handshake, and
+				// sending slowly takes long enough for several to pile up: they were
+				// sent before it had the page, so they are not a sign it dropped it.
+				// Only the beacons go: the page's own answer can already be queued.
+				this.queue = this.queue.filter(p => !K5Radio.isBootloaderBroadcast(p));
 				outcome = await this._pageReplyV3(page, WAIT_MS);
 				if (outcome.ok || outcome.dropped) break;
 				if (outcome.refused && afterDrop) break;      // see below
@@ -674,6 +679,28 @@ class K5Radio {
 			throw new Error(`Flashing stopped at page ${page + 1} of ${pages}: ${K5Radio._describeV3(outcome, WAIT_MS)}. ` +
 			                'The radio is still in bootloader mode - switch it off and on holding PTT, then try again.');
 		}
+	}
+
+	// Send one flash page slowly: 16 bytes at a time with a short pause between
+	// them. The V3 / UV-K1 bootloader loses bytes when a whole 280-byte page
+	// arrives as one fast burst, which is how a browser sends it; it then never
+	// answers that page and falls back to waiting for a handshake. The page it
+	// stops at is repeatable (page 30 on a fresh radio) and depends on how the
+	// bytes arrive, not on what they are. Tested on a real radio: the same bytes
+	// written from PowerShell went through all 455 pages, and from Chrome only
+	// when sent in 16-byte pieces with a 2 ms gap (about 0.28 s a page, two
+	// minutes in all). serialtool is not affected.
+	async _sendPacedV3(payload, chunk = 16, gapMs = 2) {
+		if (!this.connected) throw new Error('The radio is not connected.');
+		const bytes = K5.frame(payload);
+		const writer = this.port.writable.getWriter();
+		try {
+			for (let at = 0; at < bytes.length; at += chunk) {
+				await writer.write(bytes.subarray(at, at + chunk));
+				if (at + chunk < bytes.length)
+					await new Promise(resolve => setTimeout(resolve, gapMs));   // none after the last piece
+			}
+		} finally { writer.releaseLock(); }
 	}
 
 	// Answer the three beacons that start a V3 flash with the handshake. A radio
