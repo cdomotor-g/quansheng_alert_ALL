@@ -85,8 +85,9 @@
      how strong the signal was. No computer is needed once it’s installed.</p>
   <div class="grid2">
     <figure>
-      <img class="lcd" src="img/screens/main-big.png" width="512" height="256" alt="Radio screen showing one reading: the station name in a dark bar, the value 18 in large digits with the word LEVEL, 34s AGO and NEWEST">
+      <img class="lcd" src="img/screens/main-big.png" width="512" height="256" alt="Radio screen showing one reading: the station name in a dark bar, the value 18 in large digits, beside it SNR +62 dB and the word LEVEL, 34s AGO and NEWEST">
       <figcaption>The newest reading, big: which station, the value and what kind it is, how
+         far the signal stood above the background noise (<abbr title="signal-to-noise ratio: how many dB the signal was above the background hiss">SNR</abbr>), how
          long ago it was heard, and <code>NEWEST</code> so you know it’s the latest.</figcaption>
     </figure>
     <figure>
@@ -402,8 +403,8 @@ python tools/serialtool/cli.py flash --port COM5 quansheng-alert-v3.bin</pre></l
        <code>LAYOUT</code> in the settings. The radio remembers the one you leave it on.</p>
     <div class="grid2 wide">
       <figure>
-        <img class="lcd" src="img/screens/main-big.png" width="512" height="256" loading="lazy" alt="BIG layout: one reading with its value in large digits">
-        <figcaption><code>BIG</code> (the default): one reading, its value in large digits.</figcaption>
+        <img class="lcd" src="img/screens/main-big.png" width="512" height="256" loading="lazy" alt="BIG layout: one reading with its value in large digits and its SNR beside it">
+        <figcaption><code>BIG</code> (the default): one reading, its value in large digits, with its SNR beside it.</figcaption>
       </figure>
       <figure>
         <img class="lcd" src="img/screens/main-two.png" width="512" height="256" loading="lazy" alt="TWO layout: two readings, each with name, value, kind and age">

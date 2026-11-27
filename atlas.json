@@ -199,7 +199,7 @@
         "tools/alert/screens/"
       ],
       "since": {
-        "date": "2026-11-20"
+        "date": "2026-11-27"
       },
       "on_change": "Copy the new or changed PNGs into docs/img/screens/ and check the guide's captions.",
       "drift_issue": true
